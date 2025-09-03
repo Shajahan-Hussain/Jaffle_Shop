@@ -1,0 +1,11 @@
+jaffle_shop:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: 'not needed'
+      user: 'not needed'
+      role: SYSADMIN
+      database: JAFFLE_SHOP
+      schema: TEST
+      warehouse: COMPUTE_WH
