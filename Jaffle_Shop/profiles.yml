@@ -5,7 +5,7 @@ jaffle_shop:
       type: snowflake
       account: 'not needed'
       user: 'not needed'
-      role: SYSADMIN
+      role: DATATESTER
       database: JAFFLE_SHOP
       schema: TEST
-      warehouse: COMPUTE_WH
+      warehouse: TASTY_BYTES_DBT_WH
