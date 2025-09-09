@@ -30,8 +30,8 @@ seeds:
 models:
   Jaffle_Shop:
     staging:
-      +schema: staging
-      +materialized: view
+      +schema: staging_kirti
+      +materialized: table
     marts:
       +schema: marts
       +materialized: table

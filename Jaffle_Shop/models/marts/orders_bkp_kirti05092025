@@ -1,23 +1,19 @@
 models:
   - name: orders
-    description: Order overview data mart, offering key details for each order including if it's a customer's first order and a food vs. drink item breakdown. One row per order.
+    description: Order overview data mart, offering key details for each order inlcluding if it's a customer's first order and a food vs. drink item breakdown. One row per order.
     data_tests:
       - dbt_utils.expression_is_true:
           expression: "order_items_subtotal = subtotal"
       - dbt_utils.expression_is_true:
           expression: "order_total = subtotal + tax_paid"
-      - dbt_utils.equal_rowcount: # Row Count Comparison Test
+      - dbt_utils.equal_rowcount: #Row Count Comparison Test
           compare_model: ref('stg_orders')
-      - dbt_utils.expression_is_true: # All orders must have an ordered_at timestamp <= now
+      - dbt_utils.expression_is_true:  #All orders must have an ordered_at timestamp less than or equal to now. DQ test # to Fail → someone inserted ordered_at = '2099-01-01'.
           expression: "ordered_at <= current_timestamp"
-      - incremental_data_drift: # NEW drift test
+      - incremental_data_drift:  # NEW drift test
           compare_model: ref('stg_orders')
-          unique_key: order_id
-          updated_at: ordered_at
-      - incremental_rowcount_today:
-          compare_model: ref('stg_orders')
-          date_column: ordered_at
-
+             unique_key: order_id
+             updated_at: ordered_at
     columns:
       - name: order_id
         description: The unique key of the orders mart.
@@ -25,28 +21,22 @@ models:
           - not_null
           - unique
           - incremental_freshness:
-              compare_model: ref('stg_orders')
-              column_name: ordered_at
-
+             compare_model: ref('stg_orders')
+             column_name: ordered_at
       - name: customer_id
         description: The foreign key relating to the customer who placed the order.
         data_tests:
           - relationships:
               to: ref('stg_customers')
               field: customer_id
-
       - name: order_total
         description: The total amount of the order in USD including tax.
-
       - name: ordered_at
         description: The timestamp the order was placed at.
-
       - name: order_cost
         description: The sum of supply expenses to fulfill the order.
-
       - name: is_food_order
         description: A boolean indicating if this order included any food items.
-
       - name: is_drink_order
         description: A boolean indicating if this order included any drink items.
 
@@ -54,26 +44,47 @@ unit_tests:
   - name: test_order_items_compute_to_bools_correctly
     description: "Test that the counts of drinks and food orders convert to booleans properly."
     model: orders
-    overrides:
-      macros:
-        is_incremental: false   # disable incremental logic for this test
     given:
-      - input: this   # required for incremental models
-        rows: []      # no existing rows in the target table
       - input: ref('order_items')
         rows:
-          - { order_id: 1, order_item_id: 1, is_drink_item: false, is_food_item: true }
-          - { order_id: 1, order_item_id: 2, is_drink_item: true,  is_food_item: false }
-          - { order_id: 2, order_item_id: 3, is_drink_item: false, is_food_item: true }
+          - {
+              order_id: 1,
+              order_item_id: 1,
+              is_drink_item: false,
+              is_food_item: true,
+            }
+          - {
+              order_id: 1,
+              order_item_id: 2,
+              is_drink_item: true,
+              is_food_item: false,
+            }
+          - {
+              order_id: 2,
+              order_item_id: 3,
+              is_drink_item: false,
+              is_food_item: true,
+            }
       - input: ref('stg_orders')
         rows:
           - { order_id: 1 }
           - { order_id: 2 }
     expect:
       rows:
-        - { order_id: 1, count_food_items: 1, count_drink_items: 1, is_drink_order: true, is_food_order: true }
-        - { order_id: 2, count_food_items: 1, count_drink_items: 0, is_drink_order: false, is_food_order: true }
-
+        - {
+            order_id: 1,
+            count_food_items: 1,
+            count_drink_items: 1,
+            is_drink_order: true,
+            is_food_order: true,
+          }
+        - {
+            order_id: 2,
+            count_food_items: 1,
+            count_drink_items: 0,
+            is_drink_order: false,
+            is_food_order: true,
+          }
 
 semantic_models:
   - name: orders
@@ -122,7 +133,7 @@ semantic_models:
 
 metrics:
   - name: order_total
-    description: Sum of total order amount. Includes tax + revenue.
+    description: Sum of total order amonunt. Includes tax + revenue.
     type: simple
     label: Order Total
     type_params:
