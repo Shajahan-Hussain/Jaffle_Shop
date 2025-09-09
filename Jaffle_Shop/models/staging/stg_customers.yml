@@ -19,4 +19,9 @@ models:
       - cdc_inserts:
           source_model: "{{ source('ecom','raw_customers') }}"
           staging_model: "{{ ref('stg_customers') }}"
- 
+      - no_duplicate_customers:
+          key_column: customer_id
+      - not_deleted_in_staging:
+          raw_table: "{{ source('ecom','raw_customers') }}"
+          src_key_column: id
+          stg_key_column: customer_id
