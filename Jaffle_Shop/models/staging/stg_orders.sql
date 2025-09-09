@@ -1,8 +1,8 @@
-with
+JAFFLE_SHOP.RAWwith
 
 source as (
 
-    select * from {{ source('ecom', 'STG_ORDERS') }}
+    select * from {{ source('ecom', 'raw_orders') }}
 
 ),
 
@@ -24,8 +24,8 @@ renamed as (
         {{ cents_to_dollars('order_total') }} as order_total,
 
         ---------- timestamps
-        {{ dbt.date_trunc('day','ordered_at') }} as ordered_at,
-        updated_at
+        {{ dbt.date_trunc('day','ordered_at') }} as ordered_at
+
     from source
 
 )
