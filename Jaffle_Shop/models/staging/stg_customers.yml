@@ -1,9 +1,20 @@
+version: 2
+
 models:
   - name: stg_customers
     description: Customer data with basic cleaning and transformation applied, one row per customer.
     columns:
       - name: customer_id
         description: The unique key for each customer.
-        data_tests:
+        tests:
           - not_null
           - unique
+          - customer_id_not_empty       # custom macro test
+          - customer_id_unique          # optional, if you want stricter duplicate check
+          
+      - name: customer_name
+        description: The full name of the customer.
+        tests:
+          - not_null
+          - column_not_null_check     # custom macro test
+          # - customer_name_format      # optional, only if you want regex validation

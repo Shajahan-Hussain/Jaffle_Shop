@@ -4,7 +4,7 @@ jaffle_shop:
     dev:
       type: snowflake
       account: 'not needed'
-      user: 'not needed'
+      user: SAMBIT.NAYAK@ELAIT.COM
       role: DATATESTER
       database: JAFFLE_SHOP
       schema: TEST

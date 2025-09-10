@@ -18,19 +18,3 @@ sources:
         description: One record per SKU for items sold in stores
       - name: raw_supplies
         description: One record per supply per SKU of items sold in stores
-        columns:
-          - name: id
-            description: Primary key for supplies
-          - name: name
-          - name: cost
-          - name: perishable
-          - name: sku
-        tests:
-          # 1️⃣ Duplicate check across all columns
-          - dbt_utils.unique_combination_of_columns:
-              combination_of_columns:
-                - id
-                - name
-                - cost
-                - perishable
-                - sku

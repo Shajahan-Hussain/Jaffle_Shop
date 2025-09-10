@@ -14,3 +14,6 @@ models:
           - relationships:
               to: ref('stg_orders')
               field: order_id
+          - minus_compare_column:
+              compare_model: source('ecom', 'raw_items')
+              column_name: order_id    
