@@ -25,3 +25,22 @@ models:
           raw_table: "{{ source('ecom','raw_customers') }}"
           src_key_column: id
           stg_key_column: customer_id
+      - cdc_rowcount_reconciliation:
+          source_model: "{{ source('ecom','raw_customers') }}"
+          staging_model: "{{ ref('stg_customers') }}"
+          source_key: "id"
+          staging_key: "customer_id"
+          updated_at_column: "updated_at"
+          is_deleted_column: "is_deleted"
+      - cdc_validations:
+          raw_table: "{{ source('ecom','raw_customers') }}"
+          src_key_column: id
+          stg_key_column: customer_id
+          updated_at_col: updated_at
+          enabled: false
+      - cdc_updates:
+         source_model: "{{ source('ecom','raw_customers') }}"
+         stg_key_column: "customer_id"
+         src_key_column: "id"
+         updated_at_column: "updated_at"
+         is_deleted_column: "is_deleted"
