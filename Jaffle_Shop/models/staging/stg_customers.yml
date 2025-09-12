@@ -44,3 +44,6 @@ models:
          src_key_column: "id"
          updated_at_column: "updated_at"
          is_deleted_column: "is_deleted"
+      - active_counts_match:
+          source_table: "{{ source('ecom','raw_customers') }}"
+          key_column: "id"
