@@ -2,11 +2,34 @@ models:
   - name: stg_orders
     description: Order data with basic cleaning and transformation applied, one row per order.
     data_tests:
+      # Check arithmetic consistency after cents-to-dollars conversion
+      # Ensures order_total = subtotal + tax_paid
       - dbt_utils.expression_is_true:
-          expression: "order_total - tax_paid = subtotal"
+          expression: "ROUND(order_total, 2) = ROUND(subtotal + tax_paid, 2)" # old exxp- "order_total - tax_paid = subtotal" 
+
     columns:
       - name: order_id
         description: The unique key for each order.
         data_tests:
+          # Every order must have an ID and null value
           - not_null
+          # No duplicate order IDs allowed
           - unique
+
+      - name: subtotal
+        description: Subtotal amount in dollars, converted from cents.
+        data_tests:
+          # Subtotal should always be present
+          - not_null
+
+      - name: tax_paid
+        description: Tax paid in dollars, converted from cents.
+        data_tests:
+          # Tax should always be present
+          - not_null
+
+      - name: order_total
+        description: Total order amount in dollars, converted from cents.
+        data_tests:
+          # Order total should always be present
+          - not_null
