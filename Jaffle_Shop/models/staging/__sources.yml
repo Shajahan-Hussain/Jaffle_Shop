@@ -16,6 +16,13 @@ sources:
         loaded_at_field: opened_at
       - name: raw_products
         description: One record per SKU for items sold in stores
+        columns:
+          - name: type
+            description: "Accepted value test"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_set:
+                  column_name: type
+                  value_set: ['jaffle', 'beverage']
       - name: raw_supplies
         description: One record per supply per SKU of items sold in stores
         columns:
