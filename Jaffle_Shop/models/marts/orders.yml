@@ -21,6 +21,13 @@ models:
       - incremental_rowcount_today:
           compare_model: ref('stg_orders')
           date_column: last_updated_at
+      - incremental_updates:
+          source_table: ref('stg_orders')
+          key_column: order_id
+          compare_columns: "subtotal_cents,tax_paid_cents,order_total_cents"
+      - created_last_updated:
+          created_col: created_at
+          updated_col: last_updated_at
 
     columns:
       - name: order_id
