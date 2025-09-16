@@ -1,4 +1,4 @@
-{% test Audit_delete_counts(model, raw_table, key_column) %}
+{% test audit_delete_counts(model, raw_table, key_column) %}
 
 with raw_deleted as (
   select count(distinct {{ key_column }}) as raw_cnt
