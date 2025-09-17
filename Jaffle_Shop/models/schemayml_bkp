@@ -1,0 +1,10 @@
+version: 2
+
+models:
+ - name: customers
+   description: "Customer tables comparision between staging and target"
+   columns:
+      - name: customer_id
+        tests:
+          - minus_compare_column:
+              compare_model: "{{ ref('stg_customers') }}" #ref('orders')
