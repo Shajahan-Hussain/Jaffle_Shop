@@ -23,7 +23,7 @@ models:
       - created_last_updated:
           created_col: created_at
           updated_col: last_updated_at
-      - incremental_insert_check #to test incremental inserts are working
+      - incremental_insert_check   # <-- custom test for recent inserts
 
     columns:
       - name: order_id

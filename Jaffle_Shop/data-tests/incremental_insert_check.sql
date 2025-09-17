@@ -1,11 +1,12 @@
-{% test incremental_insert_check(model) %}
+-- tests/incremental_insert_check.sql
 WITH recent_raw AS (
     SELECT *
     FROM {{ ref('raw_orders') }}
-    WHERE ordered_at >= DATEADD(DAY, -{{ var('days_back', 1) }}, CURRENT_DATE)
+    WHERE ordered_at >= DATEADD(DAY, -1, CURRENT_DATE)   -- check last 1 day
 ),
-checks AS (
+check_missing AS (
     SELECT r.id,
+           r.ordered_at,
            CASE 
                 WHEN s.order_id IS NULL THEN 'Missing in Staging'
                 WHEN m.order_id IS NULL THEN 'Missing in Marts'
@@ -17,11 +18,9 @@ checks AS (
     LEFT JOIN {{ ref('orders') }} m 
            ON r.id = m.order_id
 )
--- dbt test should only FAIL when there are problems
-SELECT record_status,
-       COUNT(*) AS issue_count
-FROM checks
-WHERE record_status IN ('Missing in Staging', 'Missing in Marts')
-GROUP BY record_status;
-
-{% endtest %}
+-- dbt passes if this returns 0 rows
+SELECT id,
+       ordered_at,
+       record_status
+FROM check_missing
+WHERE record_status != 'Present in All Layers';
