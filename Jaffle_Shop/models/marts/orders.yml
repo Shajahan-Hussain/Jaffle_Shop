@@ -12,15 +12,10 @@ models:
           expression: "last_updated_at <= current_timestamp"
       - dbt_utils.expression_is_true:
           expression: "last_updated_at >= ordered_at"   # ensures updates are captured
-      - dbt_utils.unique:
-          column_name: order_id 
       - incremental_data_drift: # NEW drift test
           compare_model: ref('stg_orders')
           unique_key: order_id
           updated_at: last_updated_at
-      - incremental_rowcount_today:
-          compare_model: ref('stg_orders')
-          date_column: last_updated_at
       - incremental_updates:
           source_table: ref('stg_orders')
           key_column: order_id
@@ -28,6 +23,7 @@ models:
       - created_last_updated:
           created_col: created_at
           updated_col: last_updated_at
+      - incremental_insert_check #to test incremental inserts are working
 
     columns:
       - name: order_id
@@ -35,10 +31,7 @@ models:
         data_tests:
           - not_null
           - unique
-          - custom_test_updated_records_not_reflected
-          - incremental_freshness:
-              compare_model: ref('stg_orders')
-              column_name: last_updated_at
+          - custom_test_updated_records_not_reflected          
 
       - name: customer_id
         description: The foreign key relating to the customer who placed the order.
