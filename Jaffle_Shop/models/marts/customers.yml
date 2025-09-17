@@ -94,6 +94,8 @@ metrics:
 
 saved_queries:
   - name: customer_order_metrics
+    label: "Customer Order Metrics"
+    description: "Saved query to calculate customer lifetime orders, spend, and AOV." 
     query_params:
       metrics:
         - count_lifetime_orders

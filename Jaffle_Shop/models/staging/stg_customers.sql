@@ -15,7 +15,7 @@ renamed as (
 
         ---------- text
         name as customer_name
-
+JAFFLE_SHOP.RAW.RAW_ITEMS
     from source
 
 )
