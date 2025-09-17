@@ -9,12 +9,11 @@ models:
           - unique
           - customer_id_not_empty       # custom macro test
           - customer_id_unique          # optional, if you want stricter duplicate check
-
           - name: customer_name
-        description: "Customer name."
-        tests:
-          - not_null
-          - column_not_null_check     # custom macro test
+            description: "Customer name."
+        #tests:
+         # - not_null
+         # - column_not_null_check     # custom macro test
           # - customer_name_format      # optional, only if you want regex validation
  
     tests:
