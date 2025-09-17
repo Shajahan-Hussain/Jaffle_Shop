@@ -4,18 +4,18 @@
     unique_key=["ID"],
     incremental_strategy='merge',
     pre_hook=[ 
-        "{{ init_highwatermark('tbl_stg_customer') }}", 
-        "{{ auditlog_pre('tbl_stg_customer') }}"
+        "{{ init_highwatermark('tbl_stg_customers') }}", 
+        "{{ auditlog_pre('tbl_stg_customers') }}"
     ],
     post_hook=[ 
-        "{{ update_highwatermark('lcf.highwatermark','tbl_stg_customer', 'CUSTOMER', 'UPDATED_AT') }}", 
-        "{{ auditlog_post('tbl_stg_customer','CUSTOMER','UPDATED_AT') }}"
+        "{{ update_highwatermark('lcf.highwatermark','tbl_stg_customers', 'raw_customers', 'UPDATED_AT') }}", 
+        "{{ auditlog_post('tbl_stg_customers','raw_customers','UPDATED_AT') }}"
     ]
 ) }}
 
 WITH highwatermark AS (
     SELECT *
-    FROM {{ source('lcf', 'highwatermark') }}
+    FROM lcf.highwatermark
     WHERE table_name = '{{ this.identifier }}'
 ),
 
@@ -29,7 +29,7 @@ ranked_customers AS (
             PARTITION BY c.ID
             ORDER BY c.UPDATED_AT DESC
         ) AS rn
-    FROM {{ ref('raw_customer') }} c
+    FROM {{ ref('raw_customers') }} c
     JOIN highwatermark h
       ON c.UPDATED_AT >= h.start_date AND c.UPDATED_AT < h.end_date
 ),

@@ -6,7 +6,7 @@ using (
     select 
         '{{ stg_table }}' as table_name,
         max({{ date_column }}) as start_date
-    from {{ source('tb_101', raw_table) }}
+    from {{ source('ecom', raw_table) }}
 ) as s
 on h.table_name = s.table_name
 

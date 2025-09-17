@@ -40,7 +40,7 @@
 -- Count total records from model within HighWatermark date range
 {% set total_count_query %}
     SELECT COUNT(*) AS cnt
-    FROM {{ source('tb_101', raw_table) }}
+    FROM {{ source('ecom', raw_table) }}
     WHERE {{ date_column }} BETWEEN TO_TIMESTAMP_NTZ('{{ hwm_start }}')
                          AND TO_TIMESTAMP_NTZ('{{ hwm_end }}')
 {% endset %}

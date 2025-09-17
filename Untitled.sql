@@ -48,3 +48,11 @@ create or replace TABLE lcf.auditlog (
 	LOADEDBY VARCHAR(256) DEFAULT CURRENT_USER(),
 	primary key (AUDITLOGID)
 );
+
+SELECT * FROM lcf.highwatermark
+
+create or replace TABLE lcf.highwatermark (
+	TABLE_NAME VARCHAR(16777216),
+	START_DATE TIMESTAMP_NTZ(9),
+	END_DATE TIMESTAMP_NTZ(9)
+);
