@@ -16,7 +16,14 @@ sources:
               {%- for k, v in test.items() %}
           - {{ k }}:
               {%- for vk, vv in v.items() %}
+                  {%- if vv is iterable and vv is not string %}
+                {{ vk }}:
+                      {%- for item in vv %}
+                    - {{ item }}
+                      {%- endfor %}
+                  {%- else %}
                 {{ vk }}: {{ vv }}
+                  {%- endif %}
               {%- endfor %}
               {%- endfor %}
             {%- else %}
@@ -36,7 +43,14 @@ sources:
                   {%- for k, v in test.items() %}
               - {{ k }}:
                   {%- for vk, vv in v.items() %}
+                  {%- if vv is iterable and vv is not string %}
+                    {{ vk }}:
+                      {%- for item in vv %}
+                            - {{ item }}
+                      {%- endfor %}
+                  {%- else %}
                     {{ vk }}: {{ vv }}
+                  {%- endif %}
                   {%- endfor %}
                   {%- endfor %}
                 {%- else %}
