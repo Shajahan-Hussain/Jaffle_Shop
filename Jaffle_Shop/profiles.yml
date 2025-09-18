@@ -1,0 +1,11 @@
+jaffle_shop:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: 'not needed'
+      user: 'not needed'
+      role: DATADEVELOPER
+      database: JAFFLE_SHOP
+      schema: TEST
+      warehouse: TASTY_BYTES_DBT_WH
