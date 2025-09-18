@@ -2,7 +2,7 @@
 {# === Configuration === #}
 {% set metadata_query %}
     SELECT schema_name, table_name, column_name, test_type, test_config
-    FROM TASTY_BYTES_DBT_DB.TESTING.TEST_METADATA_TABLE
+    FROM JAFFLE_SHOP.STAGING.TEST_METADATA_TABLE
     ORDER BY schema_name, table_name, column_name
 {% endset %}
 

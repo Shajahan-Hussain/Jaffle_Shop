@@ -1,0 +1,26 @@
+version: 2
+models:
+  - name: ORDERS
+    tests:
+      - dbt_utils.expression_is_true:
+                expression: order_items_subtotal = subtotal
+      - dbt_utils.expression_is_true:
+                expression: order_total = subtotal + tax_paid
+      - dbt_utils.equal_rowcount:
+                compare_model: ref('stg_orders')
+      - dbt_utils.expression_is_true:
+                expression: last_updated_at <= current_timestamp
+      - dbt_utils.expression_is_true:
+                expression: last_updated_at >= ordered_at
+    columns:
+      - name: customer_id
+        tests:
+          - relationships:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: order_id
+        tests:
+          - dbt_utils.unique
+          - not_null
+          - unique
+          - custom_test_updated_records_not_reflected
