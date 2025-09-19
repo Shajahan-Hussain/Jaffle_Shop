@@ -24,13 +24,14 @@ sources:
                   {%- else %}
                 {{ vk }}: {{ vv }}
                   {%- endif %}
-              {%- endfor %}
+              {%- endfor %
               {%- endfor %}
             {%- else %}
           - {{ test }}
             {%- endif %}
           {%- endfor %}
         {%- endif %}
+
         {%- if table_data.columns %}
         columns:
           {%- for col, tests in table_data.columns.items() %}
