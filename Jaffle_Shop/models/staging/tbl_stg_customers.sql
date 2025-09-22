@@ -32,7 +32,7 @@ ranked_customers AS (
         ) AS rn
     FROM {{ source('ecom', 'raw_customers') }} c
     JOIN highwatermark h
-      ON c.UPDATED_AT >= h.start_date AND c.UPDATED_AT < h.end_date
+      ON c.UPDATED_AT > h.start_date AND c.UPDATED_AT <= h.end_date
 ),
 
 deduped AS (

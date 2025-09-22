@@ -41,8 +41,8 @@
 {% set total_count_query %}
     SELECT COUNT(*) AS cnt
     FROM {{ source('ecom', raw_table) }}
-    WHERE {{ date_column }} BETWEEN TO_TIMESTAMP_NTZ('{{ hwm_start }}')
-                         AND TO_TIMESTAMP_NTZ('{{ hwm_end }}')
+    WHERE {{ date_column }} > TO_TIMESTAMP_NTZ('{{ hwm_start }}')
+      AND {{ date_column }} <= TO_TIMESTAMP_NTZ('{{ hwm_end }}')
 {% endset %}
 
 -- Count inserted records (ActionType = 'I') since this run started
