@@ -15,16 +15,16 @@ sources:
             {%- if test is mapping %}
               {%- for k, v in test.items() %}
           - {{ k }}:
-              {%- for vk, vv in v.items() %}
-                  {%- if vv is iterable and vv is not string %}
+                  {%- for vk, vv in v.items() %}
+                    {%- if vv is iterable and vv is not string %}
                 {{ vk }}:
-                      {%- for item in vv %}
+                        {%- for item in vv %}
                     - {{ item }}
-                      {%- endfor %}
-                  {%- else %}
+                        {%- endfor %}
+                    {%- else %}
                 {{ vk }}: {{ vv }}
-                  {%- endif %}
-              {%- endfor %
+                    {%- endif %}
+                  {%- endfor %}
               {%- endfor %}
             {%- else %}
           - {{ test }}
@@ -43,16 +43,16 @@ sources:
                 {%- if test is mapping %}
                   {%- for k, v in test.items() %}
               - {{ k }}:
-                  {%- for vk, vv in v.items() %}
-                  {%- if vv is iterable and vv is not string %}
+                      {%- for vk, vv in v.items() %}
+                        {%- if vv is iterable and vv is not string %}
                     {{ vk }}:
-                      {%- for item in vv %}
-                            - {{ item }}
-                      {%- endfor %}
-                  {%- else %}
+                          {%- for item in vv %}
+                        - {{ item }}
+                          {%- endfor %}
+                        {%- else %}
                     {{ vk }}: {{ vv }}
-                  {%- endif %}
-                  {%- endfor %}
+                        {%- endif %}
+                      {%- endfor %}
                   {%- endfor %}
                 {%- else %}
               - {{ test }}

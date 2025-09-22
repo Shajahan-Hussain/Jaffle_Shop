@@ -1,6 +1,8 @@
 {% macro render_models_yaml_block(grouped_data) %}
 {%- for schema_name, tables in grouped_data.items() %}
   {%- for table_name, table_data in tables.items() %}
+---
+---
 version: 2
 models:
   - name: {{ table_name }}
@@ -10,18 +12,18 @@ models:
         {%- if test is mapping %}
           {%- for k, v in test.items() %}
       - {{ k }}:
-            {%- if v is mapping %}
-              {%- for vk, vv in v.items() %}
-                {%- if vv is iterable and vv is not string %}
+              {%- if v is mapping %}
+                {%- for vk, vv in v.items() %}
+                  {%- if vv is iterable and vv is not string %}
             {{ vk }}:
-                  {%- for item in vv %}
+                      {%- for item in vv %}
                 - {{ item }}
-                  {%- endfor %}
-                {%- else %}
+                      {%- endfor %}
+                  {%- else %}
             {{ vk }}: {{ vv }}
-                {%- endif %}
-              {%- endfor %}
-            {%- endif %}
+                  {%- endif %}
+                {%- endfor %}
+              {%- endif %}
           {%- endfor %}
         {%- else %}
       - {{ test }}
@@ -38,16 +40,16 @@ models:
             {%- if test is mapping %}
               {%- for k, v in test.items() %}
           - {{ k }}:
-                {%- for vk, vv in v.items() %}
-                  {%- if vv is iterable and vv is not string %}
+                  {%- for vk, vv in v.items() %}
+                    {%- if vv is iterable and vv is not string %}
                 {{ vk }}:
-                      {%- for item in vv %}
+                        {%- for item in vv %}
                     - {{ item }}
-                      {%- endfor %}
-                  {%- else %}
+                        {%- endfor %}
+                    {%- else %}
                 {{ vk }}: {{ vv }}
-                  {%- endif %}
-                {%- endfor %}
+                    {%- endif %}
+                  {%- endfor %}
               {%- endfor %}
             {%- else %}
           - {{ test }}
