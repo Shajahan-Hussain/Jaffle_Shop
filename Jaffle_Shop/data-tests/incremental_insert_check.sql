@@ -1,8 +1,8 @@
 -- tests/incremental_insert_check.sql
 WITH recent_raw AS (
     SELECT *
-    FROM {{ ref('raw_orders') }}
-    WHERE ordered_at >= DATEADD(DAY, -1, CURRENT_DATE)   -- check last 1 day
+    FROM {{ source('ecom', 'raw_orders') }}
+    WHERE ordered_at >= DATEADD(DAY, -7, CURRENT_DATE)   -- check last 1 day
 ),
 check_missing AS (
     SELECT r.id,
@@ -19,8 +19,9 @@ check_missing AS (
            ON r.id = m.order_id
 )
 -- dbt passes if this returns 0 rows
-SELECT id,
-       ordered_at,
-       record_status
+SELECT *
+        --id,
+       --ordered_at,
+       --record_status
 FROM check_missing
-WHERE record_status != 'Present in All Layers';
+--WHERE record_status != 'Present in All Layers'
