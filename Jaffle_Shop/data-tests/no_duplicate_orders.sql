@@ -1,5 +1,5 @@
 -- Fail if duplicate order_id exists in stg_orders
-select order_id, count(*) as occurrences
+select order_id, count(order_id) as occurrences
 from {{ ref('stg_orders') }}
 group by order_id
-having count(*) > 1
+having count(order_id) > 1
