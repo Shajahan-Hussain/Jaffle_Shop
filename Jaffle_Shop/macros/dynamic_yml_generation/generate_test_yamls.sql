@@ -1,63 +1,71 @@
 {% macro generate_test_yamls() %}
-{# === Configuration === #}
+
+{# --- Union query for descriptions + tests --- #}
 {% set metadata_query %}
-    SELECT schema_name, table_name, column_name, test_type, test_config
-    FROM JAFFLE_SHOP.STAGING.TEST_METADATA_TABLE
+    SELECT schema_name,
+           table_name,
+           column_name,
+           description,
+           NULL AS test_type,
+           NULL AS test_config
+    FROM JAFFLE_SHOP.TESTING.DESCRIPTION_METADATA
+
+    UNION ALL
+
+    SELECT schema_name,
+           table_name,
+           column_name,
+           NULL AS description,
+           test_type,
+           test_config
+    FROM JAFFLE_SHOP.TESTING.TEST_METADATA
+
     ORDER BY schema_name, table_name, column_name
 {% endset %}
 
 {% set metadata = run_query(metadata_query) %}
-{% if not metadata %}
-  {{ log("No metadata found.", info=True) }}
-  {{ return("No metadata found.") }}
+{% if metadata %}
+  {% set metadata = metadata.rows %}
+{% else %}
+  {% set metadata = [] %}
 {% endif %}
 
-{% set metadata = metadata.rows %}
 {% set models_data = {} %}
 {% set sources_data = {} %}
 
-{# === Get list of all model names from dbt project === #}
+{# dbt models in project #}
 {% set dbt_models = graph.nodes.values()
     | selectattr('resource_type', 'equalto', 'model')
     | map(attribute='alias') 
     | list %}
 
-{# === Process metadata rows === #}
+{# --- Apply metadata (descriptions + tests together) --- #}
 {% for row in metadata %}
   {% set schema = row[0] %}
   {% set table = row[1] %}
   {% set column = row[2] %}
-  {% set test_type = row[3] %}
-  {% set test_config = row[4] %}
+  {% set description = row[3] %}
+  {% set test_type = row[4] %}
+  {% set test_config = row[5] %}
 
- {% if table | lower in dbt_models | map('lower') %}
-    {% do add_test_to(models_data, schema, table, column, test_type, test_config) %}
+  {% if table | lower in dbt_models | map('lower') %}
+    {% do add_metadata_to(models_data, schema, table, column, description=description, test_type=test_type, test_config=test_config) %}
   {% else %}
-    {% do add_test_to(sources_data, schema, table, column, test_type, test_config) %}
+    {% do add_metadata_to(sources_data, schema, table, column, description=description, test_type=test_type, test_config=test_config) %}
   {% endif %}
 {% endfor %}
 
-{# === Compose YAML output === #}
+{# --- Render YAML --- #}
 version: 2
 
-
-{# Prepare source YAML output #}
 {% set full_sources_yaml = render_sources_yaml_block(sources_data) %}
-
-{# Log sources YAML #}
 {{ log("=== SOURCES YAML ===", info=True) }}
 {{ log(full_sources_yaml, info=True) }}
 
-{# Prepare models YAML output #}
 {% set models_yaml = render_models_yaml_block(models_data) %}
-
-{# Log models YAML #}
 {{ log("=== MODELS YAML ===", info=True) }}
 {{ log(models_yaml, info=True) }}
 
-{# Output combined YAML #}
 {{ full_sources_yaml }}
-
 {{ models_yaml }}
-
 {% endmacro %}
