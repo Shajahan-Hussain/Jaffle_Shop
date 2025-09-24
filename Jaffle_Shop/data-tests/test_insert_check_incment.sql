@@ -23,4 +23,4 @@ SELECT *
        --ordered_at,
        --record_status
 FROM check_missing
---WHERE record_status != 'Present in All Layers'
+WHERE record_status != 'Present in All Layers'

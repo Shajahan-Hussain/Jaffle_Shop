@@ -5,7 +5,7 @@ models:
       # Check arithmetic consistency after cents-to-dollars conversion
       # Ensures order_total = subtotal + tax_paid
       - dbt_utils.expression_is_true:
-          expression: "ROUND(order_total, 2) = ROUND(subtotal + tax_paid, 2)" # old exxp- "order_total - tax_paid = subtotal" 
+          expression: "order_total - tax_paid = subtotal"  #"ROUND(order_total, 2) = ROUND(subtotal + tax_paid, 2)" # old exxp- "order_total - tax_paid = subtotal" 
 
     columns:
       - name: order_id

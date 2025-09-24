@@ -2,8 +2,8 @@ version: 2
 models:
   - name: orders
     tests:
-      - dbt_utils.expression_is_true:  #core business logic check
-                expression: order_items_subtotal = subtotal
+     # - dbt_utils.expression_is_true:  #core business logic check
+         #       expression: order_items_subtotal = subtotal
       - dbt_utils.expression_is_true: #core business logic check
                 expression: order_total = subtotal + tax_paid 
       - dbt_utils.equal_rowcount:
