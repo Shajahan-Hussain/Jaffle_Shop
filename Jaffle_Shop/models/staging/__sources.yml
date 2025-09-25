@@ -26,6 +26,8 @@ sources:
                     - cost
                     - perishable
                     - sku
+          - mandatory_fields_check:
+                columns: ["id","name","cost","perishable","sku"]         
         columns:
           - name: cost
             description: ''
