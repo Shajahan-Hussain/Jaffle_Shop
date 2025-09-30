@@ -1,4 +1,13 @@
-{% macro add_metadata_to(data, group_key, table, column, description=None, test_type=None, test_config=None) %}
+{% macro add_metadata_to(
+    data,
+    group_key,
+    table,
+    column,
+    description=None,
+    test_type=None,
+    test_config=None,
+    test_description=None
+) %}
   {% set table_entry = data.get(group_key, {}).get(table, {
       'columns': {},
       'table_tests': [],
@@ -6,7 +15,7 @@
   }) %}
 
   {# --- Table-level description --- #}
-  {% if description is not none and description|trim != '' and not column %}
+  {% if description and not column and not test_type %}
     {% do table_entry.update({'description': description}) %}
   {% endif %}
 
@@ -17,28 +26,34 @@
         'description': ''
     }) %}
 
-    {% if description is not none and description|trim != '' %}
+    {% if description and not test_type %}
       {% do col_entry.update({'description': description}) %}
     {% endif %}
 
-    {% if test_type is not none and test_type|trim != '' %}
-      {% if test_config is not none and test_config|trim != '' %}
-        {% do col_entry['tests'].append({ test_type: fromjson(test_config) }) %}
-      {% else %}
-        {% do col_entry['tests'].append(test_type) %}
+    {% if test_type %}
+      {% set test_def = { test_type: {} } %}
+      {% if test_config %}
+        {% do test_def.update({ test_type: fromjson(test_config) }) %}
       {% endif %}
+      {% if test_description %}
+        {% do test_def[test_type].update({'description': test_description}) %}
+      {% endif %}
+      {% do col_entry['tests'].append(test_def) %}
     {% endif %}
 
     {% do table_entry['columns'].update({ column: col_entry }) %}
 
   {% else %}
     {# --- Table-level tests --- #}
-    {% if test_type is not none and test_type|trim != '' %}
-      {% if test_config is not none and test_config|trim != '' %}
-        {% do table_entry['table_tests'].append({ test_type: fromjson(test_config) }) %}
-      {% else %}
-        {% do table_entry['table_tests'].append(test_type) %}
+    {% if test_type %}
+      {% set test_def = { test_type: {} } %}
+      {% if test_config %}
+        {% do test_def.update({ test_type: fromjson(test_config) }) %}
       {% endif %}
+      {% if test_description %}
+        {% do test_def[test_type].update({'description': test_description}) %}
+      {% endif %}
+      {% do table_entry['table_tests'].append(test_def) %}
     {% endif %}
   {% endif %}
 

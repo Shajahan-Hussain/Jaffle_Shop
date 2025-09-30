@@ -9,23 +9,12 @@ models:
     {%- if table_data.table_tests %}
     tests:
       {%- for test in table_data.table_tests %}
-        {%- if test is mapping %}
-          {%- for k, v in test.items() %}
+        {%- for k, v in test.items() %}
       - {{ k }}:
               {%- for vk, vv in v.items() %}
-                {%- if vv is iterable and vv is not string %}
-          {{ vk }}:
-                    {%- for item in vv %}
-            - {{ item }}
-                    {%- endfor %}
-                {%- else %}
           {{ vk }}: {{ vv }}
-                {%- endif %}
               {%- endfor %}
-          {%- endfor %}
-        {%- else %}
-      - {{ test }}
-        {%- endif %}
+        {%- endfor %}
       {%- endfor %}
     {%- endif %}
 
@@ -35,25 +24,14 @@ models:
       - name: {{ col }}
         description: "{{ col_data.description if col_data.description else '' }}"
         {%- if col_data.tests %}
-        data_tests:
+        tests:
           {%- for test in col_data.tests %}
-            {%- if test is mapping %}
-              {%- for k, v in test.items() %}
+            {%- for k, v in test.items() %}
           - {{ k }}:
                   {%- for vk, vv in v.items() %}
-                    {%- if vv is iterable and vv is not string %}
-                {{ vk }}:
-                        {%- for item in vv %}
-                    - {{ item }}
-                        {%- endfor %}
-                    {%- else %}
-                {{ vk }}: {{ vv }}
-                    {%- endif %}
+              {{ vk }}: {{ vv }}
                   {%- endfor %}
-              {%- endfor %}
-            {%- else %}
-          - {{ test }}
-            {%- endif %}
+            {%- endfor %}
           {%- endfor %}
         {%- endif %}
       {%- endfor %}
