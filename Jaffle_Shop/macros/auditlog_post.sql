@@ -22,9 +22,12 @@
 
 -- Get HighWatermark start and end timestamps for this model
 {% set hwm_query %}
-    SELECT start_date, end_date
-    FROM lcf.HighWaterMark
-    WHERE Table_Name = '{{ model_name }}'
+    SELECT startdate as start_date, enddate as end_date
+    FROM lcf.AuditLog
+    WHERE TableName = '{{ model_name }}'
+      AND Status = 'In Progress'
+    ORDER BY LoadStartTime DESC
+    LIMIT 1
 {% endset %}
 
 {% set hwm_result = run_query(hwm_query) %}

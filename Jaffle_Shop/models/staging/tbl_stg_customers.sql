@@ -7,8 +7,8 @@
         "{{ init_highwatermark('tbl_stg_customers') }}", 
         "{{ auditlog_pre('tbl_stg_customers') }}"
     ],
-    post_hook=[ "{{ auditlog_post('tbl_stg_customers','raw_customers','UPDATED_AT') }}",
-        "{{ update_highwatermark('lcf.highwatermark','tbl_stg_customers', 'raw_customers', 'UPDATED_AT') }}"
+    post_hook=[ "{{ update_highwatermark('lcf.highwatermark','tbl_stg_customers', 'raw_customers', 'UPDATED_AT') }}",
+        "{{ auditlog_post('tbl_stg_customers','raw_customers','UPDATED_AT') }}"
         
     ]
 ) }}

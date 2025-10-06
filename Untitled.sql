@@ -56,3 +56,5 @@ create or replace TABLE lcf.highwatermark (
 	START_DATE TIMESTAMP_NTZ(9),
 	END_DATE TIMESTAMP_NTZ(9)
 );
+
+select * from lcf.auditlog
