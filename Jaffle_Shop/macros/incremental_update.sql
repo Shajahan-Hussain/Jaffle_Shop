@@ -1,43 +1,54 @@
-{% test incremental_updates(model, source_table, key_column, compare_columns) %}
- 
-{# split the compare_columns list into individual columns #}
-{% set cols = compare_columns.split(",") %}
- 
-with source_latest as (
+{% test incremental_update(
+    model,
+    source_table,
+    key_column,
+    business_columns,
+    prev_timestamp,
+    created_col,
+    ref_col
+) %}
+
+{% set cols = business_columns.split(",") %}
+
+with updated_stg as (
     select
-        {{ key_column }} as id,
+        {{ key_column }} as id
         {% for col in cols %}
-            {{ col }} as {{ col }}{% if not loop.last %},{% endif %}
+            , {{ col }} as {{ col }}
         {% endfor %}
+    ,{{ ref_col }} as {{ ref_col }}
     from {{ source_table }}
 ),
- 
-target as (
+
+tgt as (
     select
-        {{ key_column }} as id,
+        {{ key_column }} as id
         {% for col in cols %}
-            {{ col }} as {{ col }}{% if not loop.last %},{% endif %}
+            , {{ col }} as {{ col }}
         {% endfor %}
+        , last_updated_at
+        , {{ created_col }} as {{ created_col }}
+        , {{ ref_col }} as {{ ref_col }}
     from {{ model }}
 ),
- 
+
 compare as (
-    select s.id
-        {% for col in cols %}
-            , s.{{ col }} as source_{{ col }}
-            , t.{{ col }} as target_{{ col }}
-        {% endfor %}
-    from source_latest s
-    join target t on s.id = t.id
+    select t.*
+    from tgt t
+    join updated_stg s on t.id = s.id
+    where
+        (
+          {% for col in cols %}
+            s.{{ col }} = t.{{ col }}{% if not loop.last %} or {% endif %}
+          {% endfor %}
+        )
+        and t.last_updated_at = timestamp '{{ prev_timestamp }}'
+        and t.{{ created_col }} <> t.{{ ref_col }}
 )
- 
--- Fail rows where any column mismatches
-select *
+
+-- Invert result: test passes if records exist
+select count(*) as passing_rows
 from compare
-where
-    {% for col in cols %}
-        source_{{ col }} != target_{{ col }}
-        {% if not loop.last %} or {% endif %}
-    {% endfor %}
- 
+having count(*) > 0
+
 {% endtest %}
