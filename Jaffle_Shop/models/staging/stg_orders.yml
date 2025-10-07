@@ -19,6 +19,9 @@ models:
                 - ORDER_TOTAL
                 - ORDERED_AT
                 - ROW_NUM
+# ✅ Custom Generic Test - Verify no duplicate records introduced after staging transformations
+      - no_duplicates_in_stg:
+          columns: ["ORDER_ID", "CUSTOMER_ID"]
     columns:
       - name: order_id
         description: The unique key for each order.
