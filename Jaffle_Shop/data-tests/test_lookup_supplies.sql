@@ -13,4 +13,4 @@ select
 from supplies s
 left join products p
     on s.sku = p.product_id
-where p.product_id is null;
+where p.product_id is null
