@@ -19,9 +19,14 @@ models:
                 - ORDER_TOTAL
                 - ORDERED_AT
                 - ROW_NUM
-# ✅ Custom Generic Test - Verify no duplicate records introduced after staging transformations
+# Custom Generic Test - Verify no duplicate records introduced after staging transformations
       - no_duplicates_in_stg:
           columns: ["ORDER_ID", "CUSTOMER_ID"]
+      - column_rename_check:
+          source_model: "{{ source('ecom', 'raw_orders') }}"
+          mappings:
+            id: order_id
+            store_id: location_id
     columns:
       - name: order_id
         description: The unique key for each order.
