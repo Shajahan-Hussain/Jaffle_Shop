@@ -32,6 +32,11 @@ models:
             is_deleted_column: is_deleted
       - no_duplicate_customers:
             key_column: customer_id
+      - column_rename_check:
+          source_model: "{{ source('ecom', 'raw_customers') }}"
+          mappings:
+            id: customer_id
+            name: customer_name
     columns:
       - name: customer_id
         tests:

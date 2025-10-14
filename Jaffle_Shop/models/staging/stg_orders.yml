@@ -1,11 +1,7 @@
+version: 2
 models:
   - name: stg_orders
-    description: Order data with basic cleaning and transformation applied, one row per order.
-    data_tests:
-      # Check arithmetic consistency after cents-to-dollars conversion
-      # Ensures order_total = subtotal + tax_paid
-      - dbt_utils.expression_is_true:
-          expression: "order_total - tax_paid = subtotal"  #"ROUND(order_total, 2) = ROUND(subtotal + tax_paid, 2)" # old exxp- "order_total - tax_paid = subtotal" 
+    tests:
       - mandatory_fields_check:
             columns:
                 - ORDER_ID
@@ -19,32 +15,17 @@ models:
                 - ORDER_TOTAL
                 - ORDERED_AT
                 - ROW_NUM
-# ✅ Custom Generic Test - Verify no duplicate records introduced after staging transformations
       - no_duplicates_in_stg:
-          columns: ["ORDER_ID", "CUSTOMER_ID"]
+            columns: ['ORDER_ID', 'CUSTOMER_ID']
+      - dbt_utils.expression_is_true:
+            expression: order_total - tax_paid = subtotal
+      - column_rename_check:
+          source_model: "{{ source('ecom', 'raw_orders') }}"
+          mappings:
+            id: order_id
+            store_id: location_id
     columns:
       - name: order_id
-        description: The unique key for each order.
-        data_tests:
-          # Every order must have an ID and null value
+        tests:
           - not_null
-          # No duplicate order IDs allowed
           - unique
-
-      - name: subtotal
-        description: Subtotal amount in dollars, converted from cents.
-        data_tests:
-          # Subtotal should always be present
-          - not_null
-
-      - name: tax_paid
-        description: Tax paid in dollars, converted from cents.
-        data_tests:
-          # Tax should always be present
-          - not_null
-
-      - name: order_total
-        description: Total order amount in dollars, converted from cents.
-        data_tests:
-          # Order total should always be present
-          - not_null

@@ -1,9 +1,12 @@
-version: 2
 models:
   - name: stg_locations
-    tests:
-      - no_duplicates_in_stg:
-            columns: ['LOCATION_ID', 'LOCATION_NAME']
+    description: List of open locations with basic cleaning and transformation applied, one row per location.
+    columns:
+      - name: location_id
+        description: The unique key for each location.
+        data_tests:
+          - not_null
+          - unique
 
 unit_tests:
   - name: test_does_location_opened_at_trunc_to_date
