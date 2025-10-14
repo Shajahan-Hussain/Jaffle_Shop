@@ -11,6 +11,6 @@ products as (
 select
     s.sku
 from supplies s
-left join products p
+inner join products p
     on s.sku = p.product_id
 where p.product_id is null
