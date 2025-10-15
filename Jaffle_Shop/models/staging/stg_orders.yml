@@ -27,6 +27,18 @@ models:
           mappings:
             id: order_id
             store_id: location_id
+    # ✅ New Derived Column Validation Tests Added
+      - derived_column_validation:
+          expression: "subtotal_cents / 100"
+          column_name: "subtotal"
+
+      - derived_column_validation:
+          expression: "tax_paid_cents / 100"
+          column_name: "tax_paid"
+
+      - derived_column_validation:
+          expression: "order_total_cents / 100"
+          column_name: "order_total"
     columns:
       - name: order_id
         description: The unique key for each order.
