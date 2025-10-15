@@ -15,15 +15,32 @@ models:
                 - ORDER_TOTAL
                 - ORDERED_AT
                 - ROW_NUM
+
       - no_duplicates_in_stg:
             columns: ['ORDER_ID', 'CUSTOMER_ID']
+
       - dbt_utils.expression_is_true:
             expression: order_total - tax_paid = subtotal
+
       - column_rename_check:
           source_model: "{{ source('ecom', 'raw_orders') }}"
           mappings:
             id: order_id
             store_id: location_id
+
+      # ✅ New Derived Column Validation Tests Added
+      - derived_column_validation:
+          expression: "subtotal_cents / 100"
+          column_name: "subtotal"
+
+      - derived_column_validation:
+          expression: "tax_paid_cents / 100"
+          column_name: "tax_paid"
+
+      - derived_column_validation:
+          expression: "order_total_cents / 100"
+          column_name: "order_total"
+
     columns:
       - name: order_id
         tests:

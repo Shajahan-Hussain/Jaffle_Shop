@@ -2,24 +2,45 @@ version: 2
 models:
   - name: orders
     tests:
-     # - dbt_utils.expression_is_true:  #core business logic check
-         #       expression: order_items_subtotal = subtotal
       - dbt_utils.expression_is_true: #core business logic check
-                expression: order_total = subtotal + tax_paid 
-      - dbt_utils.equal_rowcount:
-                compare_model: ref('stg_orders') #consistency with staging
-      - dbt_utils.expression_is_true: #Ensures no record has a future timestamp.
-                expression: last_updated_at <= current_timestamp 
+          expression: order_total = subtotal + tax_paid
+
+      - dbt_utils.equal_rowcount: #consistency with staging
+          compare_model: ref('stg_orders')
+
+      - dbt_utils.expression_is_true: #Ensures no record has a future timestamp
+          expression: last_updated_at <= current_timestamp
+
       - dbt_utils.expression_is_true: #Ensures last_updated_at is never earlier than the order date
-                expression: last_updated_at >= ordered_at
+          expression: last_updated_at >= ordered_at
+
+     # # ✅ New Derived Column Validation Tests (added)
+     # - derived_column_validation:
+     #     source_model: "{{ ref('stg_orders') }}"
+     #     expression: "subtotal"
+     #     column_name: "subtotal"
+     #     join_key: "order_id"
+#
+     # - derived_column_validation:
+     #     source_model: "{{ ref('stg_orders') }}"
+     #     expression: "tax_paid"
+     #     column_name: "tax_paid"
+     #     join_key: "order_id"
+#
+     # - derived_column_validation:
+     #     source_model: "{{ ref('stg_orders') }}"
+     #     expression: "order_total"
+     #     column_name: "order_total"
+     #     join_key: "order_id"
+
     columns:
       - name: customer_id
         tests:
           - relationships: # FK check: all customers must exist in stg_customers
-                to: ref('stg_customers')
-                field: customer_id
+              to: ref('stg_customers')
+              field: customer_id
+
       - name: order_id
-        tests:          
+        tests:
           - not_null   # PK check
           - unique     # PK check
-         # - custom_test_updated_records_not_reflected  #commented (macro missing)
