@@ -16,12 +16,20 @@ sources:
             {%- for k, v in test.items() %}
           - {{ k }}:
                   {%- for vk, vv in v.items() %}
+                    {%- if vk == 'tags' %}
+              tags: [{{ vv | join(', ') }}]
+                    {%- elif vv is iterable and vv is not string %}
+              {{ vk }}:
+                        {%- for item in vv %}
+                    - {{ item }}
+                        {%- endfor %}
+                    {%- else %}
               {{ vk }}: {{ vv }}
+                    {%- endif %}
                   {%- endfor %}
             {%- endfor %}
           {%- endfor %}
         {%- endif %}
-
         {%- if table_data.columns %}
         columns:
           {%- for col, col_data in table_data.columns.items() %}
@@ -33,7 +41,16 @@ sources:
                 {%- for k, v in test.items() %}
               - {{ k }}:
                       {%- for vk, vv in v.items() %}
-                  {{ vk }}: {{ vv }}
+                        {%- if vk == 'tags' %}
+                tags: [{{ vv | join(', ') }}]
+                        {%- elif vv is iterable and vv is not string %}
+                {{ vk }}:
+                            {%- for item in vv %}
+                      - {{ item }}
+                            {%- endfor %}
+                        {%- else %}
+                {{ vk }}: {{ vv }}
+                        {%- endif %}
                       {%- endfor %}
                 {%- endfor %}
               {%- endfor %}
