@@ -1,10 +1,10 @@
-{% macro render_sources_yaml_block(sources_data) %}
+{% macro render_sources_yaml_block(sources_data,database_name='jaffle_shop') %}
 version: 2
 sources:
 {%- for source_schema, tables in sources_data.items() %}
   - name: {{ source_schema | lower | replace('_', '') }}
     description: ''
-    database: jaffle_shop
+    database: {{database_name}}
     schema: {{ source_schema }}
     tables:
       {%- for table_name, table_data in tables.items() %}
@@ -18,7 +18,7 @@ sources:
           - {{ k }}:
                   {%- for vk, vv in v.items() %}
                     {%- if vk == 'tags' and vv is iterable and vv is not string %}
-              tags: [{{ vv | map('string') | join(', ') }}]
+              tags: [{% for tag in vv %}'{{ tag }}'{% if not loop.last %}, {% endif %}{% endfor %}]
                     {%- elif vv is mapping %}
               {{ vk }}:
                         {%- for subk, subv in vv.items() %}
@@ -50,7 +50,7 @@ sources:
               - {{ k }}:
                       {%- for vk, vv in v.items() %}
                         {%- if vk == 'tags' and vv is iterable and vv is not string %}
-                  tags: [{{ vv | map('string') | join(', ') }}]
+                  tags: [{% for tag in vv %}'{{ tag }}'{% if not loop.last %}, {% endif %}{% endfor %}]
                         {%- elif vv is mapping %}
                   {{ vk }}:
                             {%- for subk, subv in vv.items() %}

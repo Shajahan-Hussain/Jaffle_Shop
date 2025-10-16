@@ -1,7 +1,8 @@
 {% macro generate_test_yamls(
     include_descriptions=true,
     include_tests=true,
-    model_names=None
+    model_names=None,
+    database_name=None
 ) %}
 
 {# =================== DESCRIPTIONS =================== #}
@@ -114,7 +115,7 @@
 {# =================== RENDER YAML =================== #}
 version: 2
 
-{% set full_sources_yaml = render_sources_yaml_block(sources_data) %}
+{% set full_sources_yaml = render_sources_yaml_block(sources_data,database_name=database_name) %}
 {{ log("=== SOURCES YAML ===", info=True) }}
 {{ log(full_sources_yaml, info=True) }}
 
