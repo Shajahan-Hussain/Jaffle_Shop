@@ -14,11 +14,11 @@ where
 
     -- 2️⃣ Supply ID check (non-null, matches SUP-001 pattern)
     or supply_id is null
-    or supply_id not regexp '^SUP-[0-9]+$'
+    or supply_id not regexp '^SUP-[0-9]{3}$'
 
     -- 3️⃣ Product ID check (non-null, matches JAF-001 pattern)
     or product_id is null
-    or product_id not regexp '^(JAF|BEV)-[0-9]+$'
+    or product_id not regexp '^(JAF|BEV|ORG)-[0-9]{3}$'
 
    -- 4️⃣ Supply name check (non-null, not numeric-only)
     or supply_name is null
