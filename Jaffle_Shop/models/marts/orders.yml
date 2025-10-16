@@ -12,6 +12,15 @@ models:
                 expression: last_updated_at <= current_timestamp 
       - dbt_utils.expression_is_true: #Ensures last_updated_at is never earlier than the order date
                 expression: last_updated_at >= ordered_at
+                
+      # Join Validation (correct YAML structure)
+      - join_validation:
+          #args:
+            compare_model: ref('stg_order_items')
+            join_key: "order_id"
+            config:
+             severity: warn
+             warn_if: ">400"
       - incremental_update:
             source_table: "{{ ref('stg_orders') }}"
             key_column: order_id
