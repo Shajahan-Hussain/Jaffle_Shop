@@ -4,16 +4,16 @@ models:
     tests:
      # - dbt_utils.expression_is_true:  #core business logic check
          #       expression: order_items_subtotal = subtotal
-      - dbt_utils.expression_is_true: #core business logic check
+      - dbt_utils.expression_is_true: #core business logic check ##core business logic check #Formula KPI Validation
                 expression: order_total = subtotal + tax_paid 
       - dbt_utils.equal_rowcount:
-                compare_model: ref('stg_orders') #consistency with staging
+                compare_model: ref('stg_orders')  #consistency with staging #Data Integrity KPI Validation
       - dbt_utils.expression_is_true: #Ensures no record has a future timestamp.
                 expression: last_updated_at <= current_timestamp 
       - dbt_utils.expression_is_true: #Ensures last_updated_at is never earlier than the order date
                 expression: last_updated_at >= ordered_at
                 
-      # Join Validation (correct YAML structure)
+      # Join Validation 
       - join_validation:
           #args:
             compare_model: ref('stg_order_items')
