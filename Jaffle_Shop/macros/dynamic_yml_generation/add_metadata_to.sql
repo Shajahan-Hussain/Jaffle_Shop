@@ -9,126 +9,104 @@
     test_description=None,
     tags=None
 ) %}
-  {# --- Convert stringified tags (from Snowflake arrays) to proper list --- #}
-  {% if tags is string %}
-    {% set clean_tags = tags | replace('[', '') | replace(']', '') | replace('"', '') | replace("'", '') | replace(' ', '') | split(',') %}
-    {% set tags = clean_tags %}
-  {% endif %}
-
   {% set table_entry = data.get(group_key, {}).get(table, {
       'columns': {},
       'table_tests': [],
       'description': ''
   }) %}
 
-  {# --- Table-level description --- #}
+  {# =================== TABLE DESCRIPTION =================== #}
   {% if description and not column and not test_type %}
     {% do table_entry.update({'description': description}) %}
   {% endif %}
 
-  {# --- Column-level metadata --- #}
+  {# =================== COLUMN-LEVEL SECTION =================== #}
   {% if column %}
     {% set col_entry = table_entry['columns'].get(column, {
         'tests': [],
         'description': ''
     }) %}
 
+    {# --- Column description --- #}
     {% if description and not test_type %}
       {% do col_entry.update({'description': description}) %}
     {% endif %}
 
+    {# --- Build or merge tests map --- #}
+    {% set merged_tests = {} %}
+    {% for t in col_entry['tests'] %}
+      {% set tname = t.keys() | list | first %}
+      {% set merged_tests = merged_tests.update({ tname: t[tname] }) or merged_tests %}
+    {% endfor %}
+
     {% if test_type %}
-      {% set existing_tests = col_entry['tests'] %}
-      {% set found = false %}
+      {% set new_conf = fromjson(test_config) if test_config else {} %}
+      {% set new_tags = (tags or []) | list %}
+      {% set existing = merged_tests.get(test_type, {}) %}
 
-      {% for existing_test in existing_tests %}
-        {% for existing_type, existing_details in existing_test.items() %}
-          {% if existing_type == test_type %}
-            {% set found = true %}
-            {% set merged_details = existing_details.copy() %}
-
-            {# Merge tags uniquely #}
-            {% set old_tags = existing_details.get('tags', []) %}
-            {% set new_tags = (old_tags + (tags or [])) | unique %}
-            {% do merged_details.update({'tags': new_tags}) %}
-
-            {# Merge configs if available #}
-            {% if test_config %}
-              {% do merged_details.update(fromjson(test_config)) %}
-            {% endif %}
-
-            {# Update description if new one is provided #}
-            {% if test_description %}
-              {% do merged_details.update({'description': test_description}) %}
-            {% endif %}
-
-            {% do existing_test.update({test_type: merged_details}) %}
-          {% endif %}
-        {% endfor %}
+      {# --- Merge config --- #}
+      {% for k, v in new_conf.items() %}
+        {% do existing.update({ k: v }) %}
       {% endfor %}
 
-      {% if not found %}
-        {% set test_def = { test_type: {} } %}
-        {% if test_config %}
-          {% do test_def.update({ test_type: fromjson(test_config) }) %}
-        {% endif %}
-        {% if test_description %}
-          {% do test_def[test_type].update({'description': test_description}) %}
-        {% endif %}
-        {% if tags %}
-          {% do test_def[test_type].update({'tags': tags}) %}
-        {% endif %}
-        {% do existing_tests.append(test_def) %}
+      {# --- Merge tags safely --- #}
+      {% set safe_existing_tags = existing.get('tags', []) | list %}
+      {% set merged_tags = (safe_existing_tags + new_tags) | unique | list %}
+      {% do existing.update({'tags': merged_tags}) %}
+
+      {# --- Keep first description --- #}
+      {% if not existing.get('description') and test_description %}
+        {% do existing.update({'description': test_description}) %}
       {% endif %}
+
+      {% do merged_tests.update({ test_type: existing }) %}
     {% endif %}
+
+    {# --- Rebuild col_entry['tests'] --- #}
+    {% set final_tests = [] %}
+    {% for k, v in merged_tests.items() %}
+      {% do final_tests.append({ k: v }) %}
+    {% endfor %}
+    {% do col_entry.update({'tests': final_tests}) %}
 
     {% do table_entry['columns'].update({ column: col_entry }) %}
 
+  {# =================== TABLE-LEVEL SECTION =================== #}
   {% else %}
-    {# --- Table-level tests --- #}
+    {% set merged_tests = {} %}
+    {% for t in table_entry['table_tests'] %}
+      {% set tname = t.keys() | list | first %}
+      {% set merged_tests = merged_tests.update({ tname: t[tname] }) or merged_tests %}
+    {% endfor %}
+
     {% if test_type %}
-      {% set existing_tests = table_entry['table_tests'] %}
-      {% set found = false %}
+      {% set new_conf = fromjson(test_config) if test_config else {} %}
+      {% set new_tags = (tags or []) | list %}
+      {% set existing = merged_tests.get(test_type, {}) %}
 
-      {% for existing_test in existing_tests %}
-        {% for existing_type, existing_details in existing_test.items() %}
-          {% if existing_type == test_type %}
-            {% set found = true %}
-            {% set merged_details = existing_details.copy() %}
-
-            {% set old_tags = existing_details.get('tags', []) %}
-            {% set new_tags = (old_tags + (tags or [])) | unique %}
-            {% do merged_details.update({'tags': new_tags}) %}
-
-            {% if test_config %}
-              {% do merged_details.update(fromjson(test_config)) %}
-            {% endif %}
-            {% if test_description %}
-              {% do merged_details.update({'description': test_description}) %}
-            {% endif %}
-
-            {% do existing_test.update({test_type: merged_details}) %}
-          {% endif %}
-        {% endfor %}
+      {% for k, v in new_conf.items() %}
+        {% do existing.update({ k: v }) %}
       {% endfor %}
 
-      {% if not found %}
-        {% set test_def = { test_type: {} } %}
-        {% if test_config %}
-          {% do test_def.update({ test_type: fromjson(test_config) }) %}
-        {% endif %}
-        {% if test_description %}
-          {% do test_def[test_type].update({'description': test_description}) %}
-        {% endif %}
-        {% if tags %}
-          {% do test_def[test_type].update({'tags': tags}) %}
-        {% endif %}
-        {% do existing_tests.append(test_def) %}
+      {% set safe_existing_tags = existing.get('tags', []) | list %}
+      {% set merged_tags = (safe_existing_tags + new_tags) | unique | list %}
+      {% do existing.update({'tags': merged_tags}) %}
+
+      {% if not existing.get('description') and test_description %}
+        {% do existing.update({'description': test_description}) %}
       {% endif %}
+
+      {% do merged_tests.update({ test_type: existing }) %}
     {% endif %}
+
+    {% set final_tests = [] %}
+    {% for k, v in merged_tests.items() %}
+      {% do final_tests.append({ k: v }) %}
+    {% endfor %}
+    {% do table_entry.update({'table_tests': final_tests}) %}
   {% endif %}
 
-  {# --- Update final grouped data structure --- #}
+  {# --- Update global structure --- #}
   {% set updated_group = data.get(group_key, {}) %}
   {% do updated_group.update({ table: table_entry }) %}
   {% do data.update({ group_key: updated_group }) %}

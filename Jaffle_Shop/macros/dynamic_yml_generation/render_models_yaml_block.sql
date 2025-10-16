@@ -12,8 +12,13 @@ models:
         {%- for k, v in test.items() %}
       - {{ k }}:
               {%- for vk, vv in v.items() %}
-                {%- if vk == 'tags' %}
-          tags: [{{ vv | join(', ') }}]
+                {%- if vk == 'tags' and vv is iterable and vv is not string %}
+          tags: [{% for tag in vv %}'{{ tag }}'{% if not loop.last %}, {% endif %}{% endfor %}]
+                {%- elif vv is mapping %}
+          {{ vk }}:
+                    {%- for subk, subv in vv.items() %}
+            {{ subk }}: {{ subv }}
+                    {%- endfor %}
                 {%- elif vv is iterable and vv is not string %}
           {{ vk }}:
                     {%- for item in vv %}
@@ -38,12 +43,17 @@ models:
             {%- for k, v in test.items() %}
           - {{ k }}:
                   {%- for vk, vv in v.items() %}
-                    {%- if vk == 'tags' %}
-              tags: [{{ vv | join(', ') }}]
+                    {%- if vk == 'tags' and vv is iterable and vv is not string %}
+              tags: [{% for tag in vv %}'{{ tag }}'{% if not loop.last %}, {% endif %}{% endfor %}]
+                    {%- elif vv is mapping %}
+              {{ vk }}:
+                        {%- for subk, subv in vv.items() %}
+                {{ subk }}: {{ subv }}
+                        {%- endfor %}
                     {%- elif vv is iterable and vv is not string %}
               {{ vk }}:
                         {%- for item in vv %}
-                  - {{ item }}
+                - {{ item }}
                         {%- endfor %}
                     {%- else %}
               {{ vk }}: {{ vv }}
