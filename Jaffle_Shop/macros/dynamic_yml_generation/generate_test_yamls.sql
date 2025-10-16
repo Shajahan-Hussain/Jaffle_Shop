@@ -51,6 +51,23 @@
     | map(attribute='alias')
     | list %}
 
+{# =================== PREPARE LOWERCASE MODEL LIST =================== #}
+{% set lower_models = [] %}
+
+{% if model_names %}
+  {% if model_names is string %}
+    {% set cleaned = model_names | replace("'", '"') %}
+    {% if cleaned.startswith('[') %}
+      {% set parsed = fromjson(cleaned) %}
+      {% set lower_models = parsed | map('lower') | list %}
+    {% else %}
+      {% set lower_models = [cleaned | lower] %}
+    {% endif %}
+  {% else %}
+    {% set lower_models = model_names | map('lower') | list %}
+  {% endif %}
+{% endif %}
+
 {# =================== APPLY DESCRIPTIONS =================== #}
 {% for row in desc_metadata %}
   {% set schema = row[0] %}
@@ -58,8 +75,8 @@
   {% set column = row[2] %}
   {% set description = row[3] %}
 
-  {% if not model_names or table | lower in model_names | map('lower') %}
-    {% if table | lower in dbt_models | map('lower') %}
+  {% if not model_names or table | lower in lower_models %}
+    {% if table | lower in dbt_models | map('lower') | list %}
       {% do add_metadata_to(models_data, schema, table, column, description=description) %}
     {% else %}
       {% do add_metadata_to(sources_data, schema, table, column, description=description) %}
@@ -95,8 +112,8 @@
     {% set clean_tags = tags %}
   {% endif %}
 
-  {% if not model_names or table | lower in model_names | map('lower') %}
-    {% if table | lower in dbt_models | map('lower') %}
+  {% if not model_names or table | lower in lower_models %}
+    {% if table | lower in dbt_models | map('lower') | list %}
       {% do add_metadata_to(models_data, schema, table, column,
                            test_type=test_type,
                            test_config=test_config,
@@ -115,7 +132,7 @@
 {# =================== RENDER YAML =================== #}
 version: 2
 
-{% set full_sources_yaml = render_sources_yaml_block(sources_data,database_name=database_name) %}
+{% set full_sources_yaml = render_sources_yaml_block(sources_data, database_name=database_name) %}
 {{ log("=== SOURCES YAML ===", info=True) }}
 {{ log(full_sources_yaml, info=True) }}
 
