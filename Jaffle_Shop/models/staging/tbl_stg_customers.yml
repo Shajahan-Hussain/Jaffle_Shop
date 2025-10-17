@@ -1,0 +1,10 @@
+version: 2
+models:
+  - name: tbl_stg_customers
+    tests:
+      - source_to_target_range:
+                source_table: "{{ source('ecom', 'raw_customers') }}"
+                source_key_list: ['ID']
+                source_timestamp: 'UPDATED_AT'
+                auditlog_table: 'lcf.auditlog'
+                target_key: 'ID'
