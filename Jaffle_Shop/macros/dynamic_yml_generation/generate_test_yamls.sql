@@ -27,7 +27,7 @@
 {% if include_tests %}
   {% set test_query %}
       SELECT schema_name, table_name, column_name, test_type, test_config, description, tags
-      FROM JAFFLE_SHOP.TESTING.TEST_METADATA_CLONE
+      FROM JAFFLE_SHOP.TESTING.TEST_METADATA
       ORDER BY schema_name, table_name, column_name
   {% endset %}
 

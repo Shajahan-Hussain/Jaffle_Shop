@@ -11,23 +11,32 @@ models:
       {%- for test in table_data.table_tests %}
         {%- for k, v in test.items() %}
       - {{ k }}:
-              {%- for vk, vv in v.items() %}
-                {%- if vk == 'tags' and vv is iterable and vv is not string %}
-          tags: [{% for tag in vv %}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}]
-                {%- elif vv is mapping %}
-          {{ vk }}:
-                    {%- for subk, subv in vv.items() %}
-            {{ subk }}: {{ subv }}
-                    {%- endfor %}
-                {%- elif vv is iterable and vv is not string %}
-          {{ vk }}:
-                    {%- for item in vv %}
-            - {{ item }}
-                    {%- endfor %}
-                {%- else %}
-          {{ vk }}: {{ vv }}
-                {%- endif %}
+          {# --- Description first --- #}
+          {%- if v.get('description') %}
+            description: "{{ v.get('description') }}"
+          {%- endif %}
+
+          {# --- Tags next (only if not empty) --- #}
+          {%- if v.get('tags') is iterable and v.get('tags') is not string and v.get('tags') | length > 0 %}
+            tags: [{% for tag in v.get('tags') if tag %}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+          {%- endif %}
+
+          {# --- Remaining fields --- #}
+          {%- for vk, vv in v.items() if vk not in ['description', 'tags'] %}
+            {%- if vv is mapping %}
+            {{ vk }}:
+              {%- for subk, subv in vv.items() %}
+              {{ subk }}: {{ subv }}
               {%- endfor %}
+            {%- elif vv is iterable and vv is not string %}
+            {{ vk }}:
+              {%- for item in vv %}
+              - {{ item }}
+              {%- endfor %}
+            {%- else %}
+            {{ vk }}: {{ vv }}
+            {%- endif %}
+          {%- endfor %}
         {%- endfor %}
       {%- endfor %}
     {%- endif %}
@@ -42,23 +51,32 @@ models:
           {%- for test in col_data.tests %}
             {%- for k, v in test.items() %}
           - {{ k }}:
-                  {%- for vk, vv in v.items() %}
-                    {%- if vk == 'tags' and vv is iterable and vv is not string %}
-              tags: [{% for tag in vv %}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}]
-                    {%- elif vv is mapping %}
-              {{ vk }}:
-                        {%- for subk, subv in vv.items() %}
-                {{ subk }}: {{ subv }}
-                        {%- endfor %}
-                    {%- elif vv is iterable and vv is not string %}
-              {{ vk }}:
-                        {%- for item in vv %}
-                - {{ item }}
-                        {%- endfor %}
-                    {%- else %}
-              {{ vk }}: {{ vv }}
-                    {%- endif %}
+              {# --- Description first --- #}
+              {%- if v.get('description') %}
+                description: "{{ v.get('description') }}"
+              {%- endif %}
+
+              {# --- Tags next (only if not empty) --- #}
+              {%- if v.get('tags') is iterable and v.get('tags') is not string and v.get('tags') | length > 0 %}
+                tags: [{% for tag in v.get('tags') if tag %}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+              {%- endif %}
+
+              {# --- Remaining fields --- #}
+              {%- for vk, vv in v.items() if vk not in ['description', 'tags'] %}
+                {%- if vv is mapping %}
+                {{ vk }}:
+                  {%- for subk, subv in vv.items() %}
+                  {{ subk }}: {{ subv }}
                   {%- endfor %}
+                {%- elif vv is iterable and vv is not string %}
+                {{ vk }}:
+                  {%- for item in vv %}
+                  - {{ item }}
+                  {%- endfor %}
+                {%- else %}
+                {{ vk }}: {{ vv }}
+                {%- endif %}
+              {%- endfor %}
             {%- endfor %}
           {%- endfor %}
         {%- endif %}
