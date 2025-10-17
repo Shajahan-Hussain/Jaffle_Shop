@@ -13,7 +13,7 @@ models:
       - {{ k }}:
               {%- for vk, vv in v.items() %}
                 {%- if vk == 'tags' and vv is iterable and vv is not string %}
-          tags: [{% for tag in vv %}'{{ tag }}'{% if not loop.last %}, {% endif %}{% endfor %}]
+          tags: [{% for tag in vv %}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}]
                 {%- elif vv is mapping %}
           {{ vk }}:
                     {%- for subk, subv in vv.items() %}
@@ -44,7 +44,7 @@ models:
           - {{ k }}:
                   {%- for vk, vv in v.items() %}
                     {%- if vk == 'tags' and vv is iterable and vv is not string %}
-              tags: [{% for tag in vv %}'{{ tag }}'{% if not loop.last %}, {% endif %}{% endfor %}]
+              tags: [{% for tag in vv %}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}]
                     {%- elif vv is mapping %}
               {{ vk }}:
                         {%- for subk, subv in vv.items() %}
