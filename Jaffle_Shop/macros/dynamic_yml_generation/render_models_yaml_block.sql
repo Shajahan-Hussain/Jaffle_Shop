@@ -2,59 +2,84 @@
 {%- for schema_name, tables in grouped_data.items() %}
   {%- for table_name, table_data in tables.items() %}
 ---
----
 version: 2
 models:
   - name: {{ table_name }}
+    description: "{{ table_data.description if table_data.description else '' }}"
     {%- if table_data.table_tests %}
     tests:
       {%- for test in table_data.table_tests %}
-        {%- if test is mapping %}
-          {%- for k, v in test.items() %}
+        {%- for k, v in test.items() %}
       - {{ k }}:
-              {%- if v is mapping %}
-                {%- for vk, vv in v.items() %}
-                  {%- if vv is iterable and vv is not string %}
+          {# --- Description first --- #}
+          {%- if v.get('description') %}
+            description: "{{ v.get('description') }}"
+          {%- endif %}
+
+          {# --- Tags next (only if not empty) --- #}
+          {%- if v.get('tags') is iterable and v.get('tags') is not string and v.get('tags') | length > 0 %}
+            tags: [{% for tag in v.get('tags') if tag %}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+          {%- endif %}
+
+          {# --- Remaining fields --- #}
+          {%- for vk, vv in v.items() if vk not in ['description', 'tags'] %}
+            {%- if vv is mapping %}
             {{ vk }}:
-                      {%- for item in vv %}
-                - {{ item }}
-                      {%- endfor %}
-                  {%- else %}
+              {%- for subk, subv in vv.items() %}
+              {{ subk }}: {{ subv }}
+              {%- endfor %}
+            {%- elif vv is iterable and vv is not string %}
+            {{ vk }}:
+              {%- for item in vv %}
+              - {{ item }}
+              {%- endfor %}
+            {%- else %}
             {{ vk }}: {{ vv }}
-                  {%- endif %}
-                {%- endfor %}
-              {%- endif %}
+            {%- endif %}
           {%- endfor %}
-        {%- else %}
-      - {{ test }}
-        {%- endif %}
+        {%- endfor %}
       {%- endfor %}
     {%- endif %}
 
     {%- if table_data.columns %}
     columns:
-      {%- for col, tests in table_data.columns.items() %}
+      {%- for col, col_data in table_data.columns.items() %}
       - name: {{ col }}
+        description: "{{ col_data.description if col_data.description else '' }}"
+        {%- if col_data.tests %}
         tests:
-          {%- for test in tests %}
-            {%- if test is mapping %}
-              {%- for k, v in test.items() %}
+          {%- for test in col_data.tests %}
+            {%- for k, v in test.items() %}
           - {{ k }}:
-                  {%- for vk, vv in v.items() %}
-                    {%- if vv is iterable and vv is not string %}
+              {# --- Description first --- #}
+              {%- if v.get('description') %}
+                description: "{{ v.get('description') }}"
+              {%- endif %}
+
+              {# --- Tags next (only if not empty) --- #}
+              {%- if v.get('tags') is iterable and v.get('tags') is not string and v.get('tags') | length > 0 %}
+                tags: [{% for tag in v.get('tags') if tag %}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+              {%- endif %}
+
+              {# --- Remaining fields --- #}
+              {%- for vk, vv in v.items() if vk not in ['description', 'tags'] %}
+                {%- if vv is mapping %}
                 {{ vk }}:
-                        {%- for item in vv %}
-                    - {{ item }}
-                        {%- endfor %}
-                    {%- else %}
-                {{ vk }}: {{ vv }}
-                    {%- endif %}
+                  {%- for subk, subv in vv.items() %}
+                  {{ subk }}: {{ subv }}
                   {%- endfor %}
+                {%- elif vv is iterable and vv is not string %}
+                {{ vk }}:
+                  {%- for item in vv %}
+                  - {{ item }}
+                  {%- endfor %}
+                {%- else %}
+                {{ vk }}: {{ vv }}
+                {%- endif %}
               {%- endfor %}
-            {%- else %}
-          - {{ test }}
-            {%- endif %}
+            {%- endfor %}
           {%- endfor %}
+        {%- endif %}
       {%- endfor %}
     {%- endif %}
   {%- endfor %}
