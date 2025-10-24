@@ -8,3 +8,16 @@ models:
                 source_timestamp: 'UPDATED_AT'
                 auditlog_table: 'lcf.auditlog'
                 target_key: 'ID'
+
+      - hwm_load_completeness:
+            source_name: ecom
+            source_table: raw_customers
+            updated_at_col: updated_at
+      - hwm_start_end_check:
+            source_name : ecom
+            source_table: raw_customers
+            hwm_table : lcf.highwatermark      
+      - hwm_audit_check:     
+            hwm_table: lcf.highwatermark
+            audit_table: lcf.auditlog
+            target_table: tbl_stg_customers
