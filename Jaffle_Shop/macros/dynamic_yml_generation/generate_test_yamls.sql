@@ -5,12 +5,11 @@
     database_name=None
 ) %}
 
-{# =================== DESCRIPTIONS =================== #}
 {% if include_descriptions %}
   {% set desc_query %}
-      SELECT schema_name, table_name, column_name, description
-      FROM JAFFLE_SHOP.TESTING.DESCRIPTION_METADATA
-      ORDER BY schema_name, table_name, column_name
+    SELECT schema_name, table_name, column_name, description
+    FROM JAFFLE_SHOP.TESTING.DESCRIPTION_METADATA
+    ORDER BY schema_name, table_name, column_name
   {% endset %}
 
   {% set desc_metadata = run_query(desc_query) %}
@@ -23,12 +22,11 @@
   {% set desc_metadata = [] %}
 {% endif %}
 
-{# =================== TEST METADATA =================== #}
 {% if include_tests %}
   {% set test_query %}
-      SELECT schema_name, table_name, column_name, test_type, test_config, description, tags
-      FROM JAFFLE_SHOP.TESTING.TEST_METADATA
-      ORDER BY schema_name, table_name, column_name
+    SELECT schema_name, table_name, column_name, test_type, test_config, description, tags
+    FROM JAFFLE_SHOP.TESTING.TEST_METADATA
+    ORDER BY schema_name, table_name, column_name
   {% endset %}
 
   {% set test_metadata = run_query(test_query) %}
@@ -41,17 +39,14 @@
   {% set test_metadata = [] %}
 {% endif %}
 
-{# =================== INIT STRUCTURES =================== #}
 {% set models_data = {} %}
 {% set sources_data = {} %}
 
-{# dbt models list #}
 {% set dbt_models = graph.nodes.values()
-    | selectattr('resource_type', 'equalto', 'model')
-    | map(attribute='alias')
-    | list %}
+  | selectattr('resource_type', 'equalto', 'model')
+  | map(attribute='alias')
+  | list %}
 
-{# =================== PREPARE LOWERCASE MODEL LIST =================== #}
 {% set lower_models = [] %}
 
 {% if model_names %}
@@ -68,7 +63,7 @@
   {% endif %}
 {% endif %}
 
-{# =================== APPLY DESCRIPTIONS =================== #}
+{# --- Apply Descriptions --- #}
 {% for row in desc_metadata %}
   {% set schema = row[0] %}
   {% set table = row[1] %}
@@ -84,7 +79,7 @@
   {% endif %}
 {% endfor %}
 
-{# =================== APPLY TESTS =================== #}
+{# --- Apply Tests --- #}
 {% for row in test_metadata %}
   {% set schema = row[0] %}
   {% set table = row[1] %}
@@ -94,13 +89,13 @@
   {% set test_description = row[5] %}
   {% set tags = row[6] %}
 
-  {# --- Clean tags to list --- #}
+  {# Clean tags #}
   {% set clean_tags = [] %}
   {% if tags is string %}
     {% set tag_str = tags | trim %}
     {% if tag_str[0:1] == '[' %}
-      {% set _parsed = tag_str | replace("'", '"') %}
-      {% do clean_tags.extend(fromjson(_parsed)) %}
+      {% set parsed = tag_str | replace("'", '"') %}
+      {% do clean_tags.extend(fromjson(parsed)) %}
     {% elif ',' in tag_str %}
       {% for t in tag_str.split(',') %}
         {% do clean_tags.append(t | trim) %}
@@ -109,7 +104,7 @@
       {% do clean_tags.append(tag_str) %}
     {% endif %}
   {% else %}
-    {% set clean_tags = tags %}
+    {% set clean_tags = tags or [] %}
   {% endif %}
 
   {% if not model_names or table | lower in lower_models %}
@@ -129,7 +124,6 @@
   {% endif %}
 {% endfor %}
 
-{# =================== RENDER YAML =================== #}
 version: 2
 
 {% set full_sources_yaml = render_sources_yaml_block(sources_data, database_name=database_name) %}
@@ -142,4 +136,5 @@ version: 2
 
 {{ full_sources_yaml }}
 {{ models_yaml }}
+
 {% endmacro %}
