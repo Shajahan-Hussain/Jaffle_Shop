@@ -1,4 +1,4 @@
-{% test cdc_rowcount_reconciliation(model, source_model, staging_model, source_key, staging_key, updated_at_column, is_deleted_column='is_deleted') %}
+{% test cdc_rowcount_reconciliation(model, source_model, staging_model, source_key, staging_key, updated_at_column, is_deleted_column) %}
  
 with source_latest as (
     -- Take only the latest non-deleted record per ID
