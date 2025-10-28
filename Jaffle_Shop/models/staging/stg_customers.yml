@@ -42,3 +42,41 @@ models:
         tests:
           - not_null
           - unique
+ 
+      - name: customer_name
+        description: "Customer name."
+        tests:
+          - not_null
+ 
+    tests:
+      - cdc_inserts:
+          source_model: "{{ source('ecom','raw_customers') }}"
+          staging_model: "{{ ref('stg_customers') }}"
+      - no_duplicate_customers:
+          key_column: customer_id
+      - not_deleted_in_staging:
+          raw_table: "{{ source('ecom','raw_customers') }}"
+          src_key_column: id
+          stg_key_column: customer_id
+      - cdc_rowcount_reconciliation:
+          source_model: "{{ source('ecom','raw_customers') }}"
+          staging_model: "{{ ref('stg_customers') }}"
+          source_key: "id"
+          staging_key: "customer_id"
+          updated_at_column: "updated_at"
+          is_deleted_column: "is_deleted"
+      - cdc_validations:
+          raw_table: "{{ source('ecom','raw_customers') }}"
+          src_key_column: id
+          stg_key_column: customer_id
+          updated_at_col: updated_at
+          enabled: false
+      - cdc_updates:
+         source_model: "{{ source('ecom','raw_customers') }}"
+         stg_key_column: "customer_id"
+         src_key_column: "id"
+         updated_at_column: "updated_at"
+         is_deleted_column: "is_deleted"
+      - active_counts_match:
+          source_table: "{{ source('ecom','raw_customers') }}"
+          key_column: "id"
