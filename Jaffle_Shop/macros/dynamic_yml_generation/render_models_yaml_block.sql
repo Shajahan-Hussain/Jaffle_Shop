@@ -19,7 +19,7 @@ models:
             description: "{{ v.get('description') }}"
             {%- endif %}
             {%- if v.get('tags') is iterable and v.get('tags') is not string and v.get('tags') | length > 0 %}
-            tags: [{% for tag in v.get('tags') if tag %}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+            tags: [{% for tag in v.get('tags') if tag %}'{{ tag }}'{% if not loop.last %}, {% endif %}{% endfor %}]
             {%- endif %}
             {%- for vk, vv in v.items() if vk not in ['description', 'tags'] %}
               {%- if vv is mapping %}
@@ -59,7 +59,7 @@ models:
             description: "{{ v.get('description') }}"
                 {%- endif %}
                 {%- if v.get('tags') is iterable and v.get('tags') is not string and v.get('tags') | length > 0 %}
-            tags: [{% for tag in v.get('tags') if tag %}"{{ tag }}"{% if not loop.last %}, {% endif %}{% endfor %}]
+            tags: [{% for tag in v.get('tags') if tag %}'{{ tag }}'{% if not loop.last %}, {% endif %}{% endfor %}]
                 {%- endif %}
                 {%- for vk, vv in v.items() if vk not in ['description', 'tags'] %}
                   {%- if vv is mapping %}
