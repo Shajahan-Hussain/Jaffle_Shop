@@ -23,10 +23,12 @@ models:
       - no_duplicates_in_stg:
           columns: ["ORDER_ID", "CUSTOMER_ID"]
       - column_rename_check:
-          source_model: "{{ source('ecom', 'raw_orders') }}"
-          mappings:
-            id: order_id
-            store_id: location_id
+            description: "Column Name Retest for Stg_Orders"
+            tags: ['QA']
+            source_model: "{{ source('ecom', 'raw_orders') }}"
+            mappings:
+              id: order_id
+              store_id: location_id
     # ✅ New Derived Column Validation Tests Added
       - derived_column_validation:
           expression: "subtotal_cents / 100"
