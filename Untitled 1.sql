@@ -54,3 +54,7 @@ SELECT startdateas start_date, enddate as end_date
     LIMIT 1
 
 Delete from staging.tbl_stg_customers where ID='50a2d1c4-d788-4498-a6f7-dd75d4db588f'
+
+DELETE FROM lcf.AuditLog
+WHERE ModelName = 'tbl_stg_customers'
+  AND Status = 'In Progress';

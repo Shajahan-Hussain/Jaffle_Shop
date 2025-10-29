@@ -166,6 +166,8 @@ CREATE OR REPLACE TABLE lcf.AUDITLOG (
     LOADEDBY VARCHAR(256) DEFAULT CURRENT_USER()
 );
 
+select * from lcf.auditlog order by loadstarttime desc
+
 
 
 

@@ -26,6 +26,7 @@ ranked_customers AS (
         c.NAME,
         c.UPDATED_AT,
         c.IS_DELETED,
+        c.Effective_Date,
         ROW_NUMBER() OVER (
             PARTITION BY c.ID
             ORDER BY c.UPDATED_AT DESC
@@ -45,6 +46,7 @@ SELECT
     d.NAME,
     d.UPDATED_AT,
     d.IS_DELETED,
+    d.Effective_Date,
 
     {% if is_incremental() %}
     CASE
@@ -75,7 +77,11 @@ SELECT
     CONVERT_TIMEZONE('Asia/Kolkata', CURRENT_TIMESTAMP())::TIMESTAMP_NTZ AS ActionDate,
     'I' AS ActionType
 
-    {% endif %}
+    {% endif %},
+    CASE 
+        WHEN d.Effective_date<TO_DATE(d.UPDATED_AT) THEN 'Y'
+        ELSE 'N'
+    END AS IsLateArriving
 
 FROM deduped d
 
