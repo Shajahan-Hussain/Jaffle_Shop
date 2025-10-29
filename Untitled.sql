@@ -168,6 +168,8 @@ CREATE OR REPLACE TABLE lcf.AUDITLOG (
 
 select * from lcf.auditlog order by loadstarttime desc
 
+SELECT CURRENT_ROLE();
+
 
 
 
