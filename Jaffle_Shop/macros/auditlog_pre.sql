@@ -29,10 +29,7 @@
     {% set end_date   = current_timestamp() %}
 {% endif %}
 
-CREATE SEQUENCE IF NOT EXISTS lcf.AuditLogSeq START = 1 INCREMENT = 1;
-
 INSERT INTO lcf.AuditLog (
-    AuditLogId,
     TableName,
     StartDate,
     EndDate,
@@ -41,7 +38,6 @@ INSERT INTO lcf.AuditLog (
     LoadedBy
 )
 VALUES (
-    lcf.AuditLogSeq.NEXTVAL,
     '{{ model_name }}',
     '{{ start_date }}',
     '{{ end_date }}',
