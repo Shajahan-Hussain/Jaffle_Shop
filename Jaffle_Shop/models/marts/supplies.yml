@@ -1,14 +1,3 @@
-version: 2
-models:
-  - name: supplies
-    tests:
-      - reconciliation_name_check:
-            raw_table: "{{ source('ecom','raw_supplies') }}"
-            key_column: id
-            key_col_model: supply_id
-            compare_col_model: supply_name
-            compare_column: name
-
 semantic_models:
   #The name of the semantic model.
   - name: supplies

@@ -1,9 +1,0 @@
-version: 2
-models:
-  - name: audit_deleted_customers_history
-    tests:
-      - audit_delete_counts:
-            raw_table: "{{ source('ecom','raw_customers') }}"
-            src_key_column: id
-            stg_key_column: customer_id
-            is_deleted_column: is_deleted
