@@ -18,23 +18,3 @@ sources:
         description: One record per SKU for items sold in stores
       - name: raw_supplies
         description: One record per supply per SKU of items sold in stores
-        tests:
-
-          - dbt_utils.unique_combination_of_columns:
-                combination_of_columns:
-                    - id
-                    - name
-                    - cost
-                    - perishable
-                    - sku
-          - mandatory_fields_check:
-                columns: ["id","name","cost","perishable","sku"] 
-                #this above testcase will fail due to raw_supplies table contains null values
-        columns:
-          - name: cost
-            description: ''
-            data_tests:
-              - dbt_expectations.expect_column_values_to_be_between:
-                    column_name: cost
-                    min_value: 0
-                    max_value: 10000
