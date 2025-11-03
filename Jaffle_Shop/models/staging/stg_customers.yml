@@ -1,11 +1,44 @@
 version: 2
- 
 models:
   - name: stg_customers
-    description: "Customer data with basic cleaning and transformation applied, one row per customer."
+    tests:
+      - cdc_inserts:
+            source_model: "{{ source('ecom','raw_customers') }}"
+            staging_model: "{{ ref('stg_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            updated_at_column: updated_at
+      - not_deleted_in_staging:
+            raw_table: "{{ source('ecom','raw_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            is_deleted_column: is_deleted
+      - cdc_rowcount_reconciliation:
+            source_model: "{{ source('ecom','raw_customers') }}"
+            staging_model: "{{ ref('stg_customers') }}"
+            source_key: id
+            staging_key: customer_id
+            updated_at_column: updated_at
+            is_deleted_column: is_deleted
+      - cdc_updates:
+            source_model: "{{ source('ecom','raw_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            updated_at_column: updated_at
+            is_deleted_column: is_deleted
+      - active_counts_match:
+            source_table: "{{ source('ecom','raw_customers') }}"
+            key_column: id
+            is_deleted_column: is_deleted
+      - no_duplicate_customers:
+            key_column: customer_id
+      - column_rename_check:
+          source_model: "{{ source('ecom', 'raw_customers') }}"
+          mappings:
+            id: customer_id
+            name: customer_name
     columns:
       - name: customer_id
-        description: "The unique key for each customer."
         tests:
           - not_null
           - unique

@@ -1,15 +1,13 @@
-JAFFLE_SHOP.RAWwith
+with source as (
 
-source as (
-
-    select * from {{ source('ecom', 'raw_orders') }}
+    select * 
+    from {{ source('ecom', 'raw_orders') }}
 
 ),
 
 renamed as (
 
     select
-
         ----------  ids
         id as order_id,
         store_id as location_id,
@@ -24,10 +22,24 @@ renamed as (
         {{ cents_to_dollars('order_total') }} as order_total,
 
         ---------- timestamps
-        {{ dbt.date_trunc('day','ordered_at') }} as ordered_at
+        CAST(ordered_at AS TIMESTAMP_NTZ(3)) AS ordered_at
 
     from source
+),
 
+deduped as (
+    select *
+    from (
+        select
+            r.*,
+            row_number() over (
+                partition by r.order_id
+                order by r.ordered_at desc   --uses full timestamp
+            ) as row_num
+        from renamed r
+    )
+    where row_num = 1
 )
 
-select * from renamed
+select * 
+from deduped
