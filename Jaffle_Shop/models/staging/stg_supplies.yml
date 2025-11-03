@@ -1,5 +1,13 @@
+version: 2
 models:
   - name: stg_supplies
+    tests:
+      - supply_cost_check:
+            raw_table: "{{ source('ecom','raw_supplies') }}"
+            key_column: id
+            key_col_model: supply_id
+            raw_cost_col: cost
+            staging_cost_col: supply_cost
     description: >
       List of our supply expenses data with basic cleaning and transformation applied.
 
