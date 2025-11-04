@@ -4,11 +4,11 @@
     unique_key=["ID"],
     incremental_strategy='merge',
     pre_hook=[ 
-        "{{ init_highwatermark('tbl_stg_customers') }}", 
-        "{{ auditlog_pre('tbl_stg_customers') }}"
+        "{{ init_highwatermark('tbl_stg_customers_test') }}", 
+        "{{ auditlog_pre('tbl_stg_customers_test') }}"
     ],
-    post_hook=[ "{{ update_highwatermark('lcf.highwatermark','tbl_stg_customers', 'raw_customers', 'UPDATED_AT') }}",
-        "{{ auditlog_post('tbl_stg_customers','raw_customers','UPDATED_AT') }}"
+    post_hook=[ "{{ update_highwatermark('lcf.highwatermark','tbl_stg_customers_test', 'raw_customers_test', 'UPDATED_AT') }}",
+        "{{ auditlog_post('tbl_stg_customers_test','raw_customers_test','UPDATED_AT') }}"
         
     ]
 ) }}
@@ -27,11 +27,12 @@ ranked_customers AS (
         c.UPDATED_AT,
         c.IS_DELETED,
         c.Effective_Date,
+        c.Create_Date,
         ROW_NUMBER() OVER (
             PARTITION BY c.ID
             ORDER BY c.UPDATED_AT DESC
         ) AS rn
-    FROM {{ source('ecom', 'raw_customers') }} c
+    FROM {{ source('ecom', 'raw_customers_test') }} c
     JOIN highwatermark h
       ON c.UPDATED_AT > h.start_date AND c.UPDATED_AT <= h.end_date
 ),
@@ -47,6 +48,12 @@ SELECT
     d.UPDATED_AT,
     d.IS_DELETED,
     d.Effective_Date,
+-- Compare only DATE part for late arriving logic
+    CASE
+        WHEN DATE(d.Effective_Date) < DATE(d.Create_Date)
+        THEN 'Y'
+        ELSE 'N'
+    END AS IsLateArriving,
 
     {% if is_incremental() %}
     CASE
@@ -78,7 +85,7 @@ SELECT
     'I' AS ActionType
 
     {% endif %}
-
+    
 FROM deduped d
 
 {% if is_incremental() %}

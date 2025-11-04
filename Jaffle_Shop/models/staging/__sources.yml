@@ -8,6 +8,9 @@ sources:
       - name: raw_customers
         description: One record per person who has purchased one or more items
 
+      - name: raw_customers_test
+        description: One record per person who has purchased one or more items
+
       - name: raw_orders
         description: One record per order (consisting of one or more order items)
         loaded_at_field: ordered_at
