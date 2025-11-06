@@ -28,7 +28,14 @@ sources:
                     - perishable
                     - sku
           - mandatory_fields_check:
-                columns: ["id","name","cost","perishable","sku"] 
+                columns:
+                  - id
+                  - name
+                  - cost
+                  - perishable
+                  - sku
+                tags: ['QA']
+ 
                 #this above testcase will fail due to raw_supplies table contains null values
         columns:
           - name: cost

@@ -1,3 +1,4 @@
+{{ config(tags=['QA']) }}
 with supplies as (
     select distinct sku
     from {{ ref('raw_supplies') }}   -- seed (lookup)

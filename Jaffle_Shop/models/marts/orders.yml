@@ -21,6 +21,7 @@ models:
             #config:
             # severity: warn
             # warn_if: ">400"
+            tags: ['QA']
       - incremental_update:
             source_table: "{{ ref('stg_orders') }}"
             key_column: order_id

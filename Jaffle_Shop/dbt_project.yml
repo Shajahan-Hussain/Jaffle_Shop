@@ -36,5 +36,5 @@ models:
       +schema: marts
       +materialized: table
 tests:
-  +store_failures: true     # optional: store failed records
+  #+store_failures: true     # optional: store failed records
   +severity: warn           # <— global severity

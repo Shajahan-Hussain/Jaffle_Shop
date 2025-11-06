@@ -16,7 +16,8 @@ models:
       - hwm_start_end_check:
             source_name : ecom
             source_table: raw_customers
-            hwm_table : lcf.highwatermark      
+            hwm_table : lcf.highwatermark  
+            tags: ['QA']
       - hwm_audit_check:     
             hwm_table: lcf.highwatermark
             audit_table: lcf.auditlog

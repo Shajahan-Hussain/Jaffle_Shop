@@ -7,3 +7,4 @@ models:
             src_key_column: id
             stg_key_column: customer_id
             is_deleted_column: is_deleted
+            tags: ['QA']

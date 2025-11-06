@@ -5,8 +5,10 @@ models:
       - name: order_item_id
         description: The unique key for each order item.
         data_tests:
-          - not_null
-          - unique
+          - not_null:
+             tags: ['Not_null']
+          - unique:
+             tags: ['Unique']
       - name: order_id
         description: The corresponding order each order item belongs to
         data_tests:
