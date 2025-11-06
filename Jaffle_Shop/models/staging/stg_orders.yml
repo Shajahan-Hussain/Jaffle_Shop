@@ -29,7 +29,7 @@ models:
             mappings:
               id: order_id
               store_id: location_id
-    # ✅ New Derived Column Validation Tests Added
+    # New Derived Column Validation Tests Added
       - derived_column_validation:
           expression: "subtotal_cents / 100"
           column_name: "subtotal"

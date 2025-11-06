@@ -18,9 +18,9 @@ models:
           #args:
             compare_model: ref('stg_order_items')
             join_key: "order_id"
-            config:
-             severity: warn
-             warn_if: ">400"
+            #config:
+            # severity: warn
+            # warn_if: ">400"
       - incremental_update:
             source_table: "{{ ref('stg_orders') }}"
             key_column: order_id
