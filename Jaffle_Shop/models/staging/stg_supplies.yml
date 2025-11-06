@@ -18,5 +18,7 @@ models:
       - name: supply_uuid
         description: The unique key of our supplies per cost.
         data_tests:
-          - not_null
-          - unique
+          - not_null:
+             tags: ['Not_null']
+          - unique:
+             tags: ['Unique']

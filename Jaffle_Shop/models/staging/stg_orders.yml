@@ -46,9 +46,11 @@ models:
         description: The unique key for each order.
         data_tests:
           # Every order must have an ID and null value
-          - not_null
+          - not_null:
+               tags: ['Not_null']
           # No duplicate order IDs allowed
-          - unique
+          - unique:
+               tags: ['Unique']
 
       - name: subtotal
         description: Subtotal amount in dollars, converted from cents.
