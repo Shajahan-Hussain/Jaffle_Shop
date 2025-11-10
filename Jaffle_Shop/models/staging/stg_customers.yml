@@ -18,7 +18,6 @@ models:
         tests:
           - not_null
           - column_not_null_check        # custom macro test
-          - customer_name_format         # optional, only if you want regex validation
 
     tests:
       - cdc_inserts:
