@@ -7,4 +7,6 @@ packages:
     version: 0.10.9
   - package: brooklyn-data/dbt_artifacts
     version: 2.9.3
+  - package: calogica/dbt_artifacts
+    version: [">=2.6.0", "<3.0.0"]
 

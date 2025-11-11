@@ -35,3 +35,10 @@ models:
     marts:
       +schema: marts
       +materialized: table
+
+  dbt_artifacts:
+    +database: JAFFLE_SHOP        # (change if your DB name is different)
+    +schema: LCF   
+
+on-run-end:
+  - "{{ dbt_artifacts.upload_results(results) }}"
