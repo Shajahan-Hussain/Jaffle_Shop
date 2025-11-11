@@ -55,6 +55,113 @@ SELECT startdateas start_date, enddate as end_date
 
 Delete from staging.tbl_stg_customers where ID='50a2d1c4-d788-4498-a6f7-dd75d4db588f'
 
+Select * from lcf.fct_dbt__test_executions
+
 DELETE FROM lcf.AuditLog
 WHERE ModelName = 'tbl_stg_customers'
   AND Status = 'In Progress';
+
+  Select * from lcf.fct_dbt__test_executions
+
+  Select * from staging.stg_customers
+  2347081e-7ae5-4085-a0d6-d1f551721f69
+
+  update staging.stg_customers
+  SET CUSTOMER_ID='2347081e-7ae5-4085-a0d6-d1f551721f69'
+  Where CUSTOMER_NAME='Henry Strickland'
+  and CUSTOMER_ID='2347081e-7ae5-4085-a0d6-d1f551721f69'
+
+  SELECT
+  ROW_NUMBER() OVER (ORDER BY SEQ4()) AS ID,
+  
+  d.name         AS test_name,
+  t.status,
+  t.Message
+  
+FROM jaffle_shop.lcf.fct_dbt__test_executions t
+LEFT JOIN jaffle_shop.lcf.dim_dbt__tests d
+  ON t.test_Execution_id = d.test_Execution_id
+ORDER BY t.run_started_at DESC
+LIMIT 100;
+
+DESC TABLE jaffle_shop.lcf.fct_dbt__test_executions;
+DESC TABLE jaffle_shop.lcf.dim_dbt__tests;
+
+------------------------
+WITH latest_tests AS (
+  SELECT
+      t.NODE_ID,
+      d.NAME AS TEST_NAME,
+      t.STATUS,
+      t.MESSAGE,
+      t.RUN_STARTED_AT,
+      ROW_NUMBER() OVER (
+          PARTITION BY t.NODE_ID
+          ORDER BY t.RUN_STARTED_AT DESC
+      ) AS rn
+  FROM jaffle_shop.lcf.fct_dbt__test_executions t
+  LEFT JOIN jaffle_shop.lcf.dim_dbt__tests d
+      ON t.NODE_ID = d.NODE_ID
+      AND t.COMMAND_INVOCATION_ID = d.COMMAND_INVOCATION_ID
+)
+SELECT
+    ROW_NUMBER() OVER (ORDER BY RUN_STARTED_AT DESC) AS ID,
+    TEST_NAME,
+    STATUS,
+    MESSAGE,
+FROM latest_tests
+WHERE rn = 1
+ORDER BY ID
+LIMIT 100;
+
+---------------------------------------
+INSERT INTO jaffle_shop.lcf.TestCaseExecution (
+    ID,
+    TEST_NAME,
+    STATUS,
+    MESSAGE
+)
+SELECT
+    ROW_NUMBER() OVER (ORDER BY RUN_STARTED_AT DESC) AS ID,
+    TEST_NAME,
+    STATUS,
+    MESSAGE
+FROM (
+    WITH latest_tests AS (
+        SELECT
+            t.NODE_ID,
+            d.NAME AS TEST_NAME,
+            t.STATUS,
+            t.MESSAGE,
+            t.RUN_STARTED_AT,
+            ROW_NUMBER() OVER (
+                PARTITION BY t.NODE_ID
+                ORDER BY t.RUN_STARTED_AT DESC
+            ) AS rn
+        FROM jaffle_shop.lcf.fct_dbt__test_executions t
+        LEFT JOIN jaffle_shop.lcf.dim_dbt__tests d
+            ON t.NODE_ID = d.NODE_ID
+            AND t.COMMAND_INVOCATION_ID = d.COMMAND_INVOCATION_ID
+    )
+    SELECT
+        TEST_NAME,
+        STATUS,
+        MESSAGE,
+        RUN_STARTED_AT
+    FROM latest_tests
+    WHERE rn = 1
+    ORDER BY RUN_STARTED_AT DESC
+    LIMIT 100
+) AS final;
+
+
+
+CREATE OR REPLACE TABLE jaffle_shop.lcf.TestCaseExecution (
+  ID INT,
+  TEST_NAME STRING,
+  STATUS STRING,
+  MESSAGE STRING
+);
+
+
+
