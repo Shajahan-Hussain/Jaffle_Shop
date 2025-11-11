@@ -39,7 +39,7 @@ models:
             tags: ['QA']
       - column_rename_check:
             description: "Validate that column names in staging match renamed columns from raw_customers"
-            tags: ['QA']
+            #tags: ['QA']
             source_model: "{{ source('ecom', 'raw_customers') }}"
             mappings:
               id: customer_id
