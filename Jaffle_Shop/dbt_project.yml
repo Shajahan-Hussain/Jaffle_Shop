@@ -32,6 +32,10 @@ models:
     staging:
       +schema: staging
       +materialized: table
+
+      # 👇 Add this if you want to tag all staging models under "customer"
+      stg_customers:
+        +tags: ["customer"]
     marts:
       +schema: marts
       +materialized: table
