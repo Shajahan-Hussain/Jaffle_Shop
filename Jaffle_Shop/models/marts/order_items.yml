@@ -2,6 +2,11 @@ version: 2
 models:
   - name: order_items
     description: Items contained in each order (one row per order item).
+    tests:
+         - table_exist_check:
+             schema_name: "MARTS"
+             table_name: "ORDER_ITEMS"
+             tags : ['schema_chk']
     columns:
       - name: order_item_id
         description: Unique identifier for the order item.

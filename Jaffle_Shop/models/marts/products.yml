@@ -1,8 +1,17 @@
+version: 2
+models:
+  - name: products
+    tests:
+         - table_exist_check:
+             schema_name: "MARTS"
+             table_name: "PRODUCTS"
+             tags : ['schema_chk']
 semantic_models:
   #The name of the semantic model.
   - name: products
-    description: |
+    description:
       Product dimension table. The grain of the table is one row per product.
+    
     #The name of the dbt model and schema
     model: ref('products')
     #Entities. These usually corespond to keys in the table.
