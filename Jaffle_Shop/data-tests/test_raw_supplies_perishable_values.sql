@@ -1,6 +1,6 @@
 {{ config(
     severity='warn',
-    tags=['QA']
+    tags=['Demo'] 
 ) }}
  
 {% do log("Warning: Some 'perishable' values are NULL or not TRUE/FALSE in raw_supplies.", info=True) %}

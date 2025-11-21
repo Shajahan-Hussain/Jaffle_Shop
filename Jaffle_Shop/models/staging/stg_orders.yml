@@ -24,7 +24,7 @@ models:
           columns: ["ORDER_ID", "CUSTOMER_ID"]
       - column_rename_check:
             description: "Column Name Retest for Stg_Orders"
-            tags: ['QA']
+            tags: ['Demo'] #QA -changed for Demo
             source_model: "{{ source('ecom', 'raw_orders') }}"
             mappings:
               id: order_id
@@ -47,10 +47,10 @@ models:
         data_tests:
           # Every order must have an ID and null value
           - not_null:
-               tags: ['Not_null']
+               tags: ['Demo'] #Not_null - changed for Demo
           # No duplicate order IDs allowed
           - unique:
-               tags: ['Unique']
+               tags: ['Demo'] # Unique - changed for Demo
 
       - name: subtotal
         description: Subtotal amount in dollars, converted from cents.
