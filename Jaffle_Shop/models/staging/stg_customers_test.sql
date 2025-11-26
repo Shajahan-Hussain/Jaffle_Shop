@@ -4,11 +4,11 @@
     unique_key=["ID"],
     incremental_strategy='merge',
     pre_hook=[ 
-        "{{ init_highwatermark('tbl_stg_customers_test') }}", 
-        "{{ auditlog_pre('tbl_stg_customers_test') }}"
+        "{{ init_highwatermark('stg_customers_test') }}", 
+        "{{ auditlog_pre('stg_customers_test') }}"
     ],
-    post_hook=[ "{{ update_highwatermark('lcf.highwatermark','tbl_stg_customers_test', 'raw_customers_test', 'UPDATED_AT') }}",
-        "{{ auditlog_post('tbl_stg_customers_test','raw_customers_test','UPDATED_AT') }}"
+    post_hook=[ "{{ update_highwatermark('lcf.highwatermark','stg_customers_test', 'raw_customers_test', 'UPDATED_AT') }}",
+        "{{ auditlog_post('stg_customers_test','raw_customers_test','UPDATED_AT') }}"
         
     ]
 ) }}
@@ -41,7 +41,9 @@ deduped AS (
     SELECT *
     FROM ranked_customers
     WHERE rn = 1
+    and is_deleted = false   -- exclude soft-deleted records
 )
+
 SELECT
     d.ID,
     d.NAME,

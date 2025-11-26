@@ -883,3 +883,16 @@ CALL LCF.SP_RUN_DBT_TESTS_AND_LOG_RESULTS('customer,Payment');
 
 Select * from JAFFLE_SHOP.LCF.TestCaseExecution;
 
+
+  Select * from staging.stg_customers_test where is_deleted = false   -- exclude soft-deleted records
+ 
+Select * from raw.raw_customers_test
+
+select * from lcf.highwatermark
+update lcf.highwatermark
+SEt START_DATE='1900-01-01'
+where table_name='stg_customers_test'
+
+select * from lcf.auditlog order by loadstarttime desc
+
+
