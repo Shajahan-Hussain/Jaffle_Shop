@@ -884,7 +884,9 @@ CALL LCF.SP_RUN_DBT_TESTS_AND_LOG_RESULTS('customer,Payment');
 Select * from JAFFLE_SHOP.LCF.TestCaseExecution;
 
 
-  Select * from staging.stg_customers_test where is_deleted = false   -- exclude soft-deleted records
+  Select * from  staging.stg_customers_test where CUSTOMER_ID IS NULL  -- exclude soft-deleted records
+
+    Select * from staging.stg_customers where is_deleted = false   -- exclude soft-deleted records
  
 Select * from raw.raw_customers_test
 
@@ -895,4 +897,66 @@ where table_name='stg_customers_test'
 
 select * from lcf.auditlog order by loadstarttime desc
 
+update lcf.auditlog
+set status='Failed'
+where status='In Progress'
 
+select * from marts.customers_test
+
+
+
+
+WITH customers AS (
+
+    SELECT * FROM JAFFLE_SHOP.staging.stg_customers_test
+
+),
+
+orders AS (
+
+    SELECT * FROM JAFFLE_SHOP.marts.orders
+
+),
+
+customer_orders_summary AS (
+
+    SELECT
+        o.customer_id,
+        COUNT(DISTINCT o.order_id) AS count_lifetime_orders,
+        COUNT(DISTINCT o.order_id) > 1 AS is_repeat_buyer,
+        MIN(o.ordered_at) AS first_ordered_at,
+        MAX(o.ordered_at) AS last_ordered_at,
+        SUM(o.subtotal) AS lifetime_spend_pretax,
+        SUM(o.tax_paid) AS lifetime_tax_paid,
+        SUM(o.order_total) AS lifetime_spend
+    FROM orders o
+    GROUP BY 1
+
+),
+
+joined AS (
+
+    SELECT
+        c.customer_id,
+        c.customer_name,
+        s.count_lifetime_orders,
+        s.first_ordered_at,
+        s.last_ordered_at,
+        s.lifetime_spend_pretax,
+        s.lifetime_tax_paid,
+        s.lifetime_spend,
+
+        CASE WHEN s.is_repeat_buyer THEN 'returning'
+             ELSE 'new'
+        END AS customer_type,
+
+        -- audit columns
+        'I' AS ActionType,
+        CURRENT_TIMESTAMP()::TIMESTAMP_NTZ AS InsertDate,
+        CURRENT_TIMESTAMP()::TIMESTAMP_NTZ AS ActionDate
+    FROM customers c
+    LEFT JOIN customer_orders_summary s
+        ON c.customer_id = s.customer_id
+)
+
+SELECT * FROM joined;
