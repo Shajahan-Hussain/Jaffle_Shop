@@ -32,4 +32,3 @@ seeds:
 
 on-run-end:
   - "{{ dbt_artifacts.upload_results(results) }}"
-

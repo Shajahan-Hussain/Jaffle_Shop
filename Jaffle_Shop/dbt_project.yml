@@ -20,8 +20,16 @@ clean-targets:
 
 vars:
   "dbt_date:time_zone": "America/Los_Angeles"
+  
 on-run-end:
+  - "truncate table JAFFLE_SHOP.TESTING.MODELS"
+  - "truncate table JAFFLE_SHOP.TESTING.TESTS"
+  - "truncate table JAFFLE_SHOP.TESTING.SNAPSHOTS"
+  - "truncate table JAFFLE_SHOP.TESTING.SEEDS"
+  - "truncate table JAFFLE_SHOP.TESTING.SOURCES"
   - "{{ dbt_artifacts.upload_results(results) }}"
+
+  
 seeds:
   Jaffle_Shop:
     +schema: raw
@@ -38,6 +46,9 @@ models:
       +materialized: table
   dbt_artifacts:
     +enabled: false
-    sources:
-     +enabled: true
-     +schema: testing
+    sources: 
+      +enabled: true
+      +schema: testing
+
+
+
