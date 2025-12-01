@@ -1,4 +1,4 @@
-{{ config(tags=['QA']) }}
+{{ config(tags=['Demo']) }}
 with supplies as (
     select distinct sku
     from {{ ref('raw_supplies') }}   -- seed (lookup)

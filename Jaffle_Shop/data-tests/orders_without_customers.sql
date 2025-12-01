@@ -1,5 +1,5 @@
 -- Fail if any order refers to a non-existing customer
-{{ config(tags=['QA']) }}
+{{ config(tags=['Demo']) }}
 select o.order_id, o.customer_id
 from {{ ref('stg_orders') }} o
 left join {{ ref('stg_customers') }} c
