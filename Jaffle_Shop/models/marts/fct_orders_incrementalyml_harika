@@ -1,0 +1,9 @@
+models:
+  - name: fct_orders_incremental
+    description: "Incremental fact orders table" #generic tests#
+    columns:
+      - name: order_id
+        description: "Order ID"
+        tests:
+          - not_null
+          - unique

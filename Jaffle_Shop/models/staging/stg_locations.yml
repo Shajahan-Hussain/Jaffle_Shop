@@ -6,7 +6,9 @@ models:
         description: The unique key for each location.
         data_tests:
           - not_null
+           
           - unique
+           
 
 unit_tests:
   - name: test_does_location_opened_at_trunc_to_date

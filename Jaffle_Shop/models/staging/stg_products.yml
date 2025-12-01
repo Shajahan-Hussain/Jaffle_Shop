@@ -5,5 +5,7 @@ models:
       - name: product_id
         description: The unique key for each product.
         data_tests:
-          - not_null
-          - unique
+          - not_null:
+             tags: ['Not_null']
+          - unique:
+             tags: ['Unique']

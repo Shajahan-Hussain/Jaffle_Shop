@@ -1,7 +1,11 @@
 models:
   - name: customers
     description: Customer overview data mart, offering key details for each unique customer. One row per customer.
-   # data_tests:
+    tests:
+         - table_exist_check:
+             schema_name: "MARTS"
+             table_name: "CUSTOMERS"
+             tags : ['schema_chk']
       #- dbt_utils.expression_is_true:
        #   expression: "lifetime_spend_pretax + lifetime_tax_paid = lifetime_spend"
     columns:
