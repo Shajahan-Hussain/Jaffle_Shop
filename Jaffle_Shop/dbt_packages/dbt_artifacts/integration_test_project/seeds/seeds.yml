@@ -1,8 +1,0 @@
----
-
-seeds:
-  - name: freshness
-    config:
-      column_types:
-        id: integer
-        load_timestamp: timestamp
