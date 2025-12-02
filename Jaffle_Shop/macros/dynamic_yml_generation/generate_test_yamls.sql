@@ -8,7 +8,7 @@
 {% if include_descriptions %}
   {% set desc_query %}
     SELECT schema_name, table_name, column_name, description
-    FROM JAFFLE_SHOP.TESTING.DESCRIPTION_METADATA
+    FROM JAFFLE_SHOP.METADATA.DESCRIPTION_METADATA
     ORDER BY schema_name, table_name, column_name
   {% endset %}
 
@@ -25,7 +25,7 @@
 {% if include_tests %}
   {% set test_query %}
     SELECT schema_name, table_name, column_name, test_type, test_config, description, tags
-    FROM JAFFLE_SHOP.TESTING.TEST_METADATA
+    FROM JAFFLE_SHOP.METADATA.TEST_METADATA
     ORDER BY schema_name, table_name, column_name
   {% endset %}
 
