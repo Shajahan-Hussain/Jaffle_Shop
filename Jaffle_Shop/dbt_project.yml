@@ -22,11 +22,11 @@ vars:
   "dbt_date:time_zone": "America/Los_Angeles"
   
 on-run-end:
-  - "truncate table JAFFLE_SHOP.TESTING.MODELS"
-  - "truncate table JAFFLE_SHOP.TESTING.TESTS"
-  - "truncate table JAFFLE_SHOP.TESTING.SNAPSHOTS"
-  - "truncate table JAFFLE_SHOP.TESTING.SEEDS"
-  - "truncate table JAFFLE_SHOP.TESTING.SOURCES"
+  - "truncate table JAFFLE_SHOP.LOGS.MODELS"
+  - "truncate table JAFFLE_SHOP.LOGS.TESTS"
+  - "truncate table JAFFLE_SHOP.LOGS.SNAPSHOTS"
+  - "truncate table JAFFLE_SHOP.LOGS.SEEDS"
+  - "truncate table JAFFLE_SHOP.LOGS.SOURCES"
   - "{{ dbt_artifacts.upload_results(results) }}"
 
   
