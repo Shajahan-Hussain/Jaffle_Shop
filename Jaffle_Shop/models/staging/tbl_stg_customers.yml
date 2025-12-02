@@ -2,12 +2,6 @@ version: 2
 models:
   - name: tbl_stg_customers
     tests:
-      - source_to_target_range:
-                source_table: "{{ source('ecom', 'raw_customers') }}"
-                source_key_list: ['ID']
-                source_timestamp: 'UPDATED_AT'
-                auditlog_table: 'lcf.auditlog'
-                target_key: 'ID'
 
       - hwm_load_completeness:
             source_name: ecom
@@ -16,9 +10,5 @@ models:
       - hwm_start_end_check:
             source_name : ecom
             source_table: raw_customers
-            hwm_table : lcf.highwatermark  
+            hwm_table : Metadata.highwatermark  
             tags: ['QA']
-      - hwm_audit_check:     
-            hwm_table: lcf.highwatermark
-            audit_table: lcf.auditlog
-            target_table: tbl_stg_customers

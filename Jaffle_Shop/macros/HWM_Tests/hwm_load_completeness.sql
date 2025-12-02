@@ -2,7 +2,7 @@
 
 WITH hwm AS (
     SELECT start_date, end_date
-    FROM lcf.highwatermark
+    FROM metadata.highwatermark
     WHERE table_name = '{{ model.identifier }}'
 ),
 
@@ -22,9 +22,9 @@ missing_in_stg AS (
     SELECT s.*
     FROM eligible_source s
     LEFT JOIN {{ model }} t
-        ON s.ID = t.ID
+        ON s.ID = t.customer_id
         AND s.UPDATED_AT = t.UPDATED_AT
-    WHERE t.ID IS NULL
+    WHERE t.customer_id IS NULL
 )
 
 SELECT *
