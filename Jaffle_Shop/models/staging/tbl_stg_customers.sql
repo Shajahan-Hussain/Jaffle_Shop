@@ -1,14 +1,12 @@
 {{ config(
     materialized='incremental',
     schema='staging',
-    unique_key=["ID"],
+    unique_key=["customer_id"],
     incremental_strategy='merge',
     pre_hook=[ 
-        "{{ init_highwatermark('tbl_stg_customers') }}", 
-        "{{ auditlog_pre('tbl_stg_customers') }}"
+        "{{ init_highwatermark('stg_customers') }}"
     ],
-    post_hook=[ "{{ update_highwatermark('lcf.highwatermark','tbl_stg_customers', 'raw_customers', 'UPDATED_AT') }}",
-        "{{ auditlog_post('tbl_stg_customers','raw_customers','UPDATED_AT') }}"
+    post_hook=[ "{{ update_highwatermark('metadata.highwatermark','stg_customers', 'raw_customers', 'UPDATED_AT') }}"
         
     ]
 ) }}
@@ -16,17 +14,18 @@
 
 WITH highwatermark AS (
     SELECT *
-    FROM lcf.highwatermark
+    FROM metadata.highwatermark
     WHERE table_name = '{{ this.identifier }}'
 ),
 
 ranked_customers AS (
     SELECT
-        c.ID,
-        c.NAME,
-        c.UPDATED_AT,
+        c.ID AS customer_id,
+        c.NAME AS customer_name,
+        c.UPDATED_AT AS updated_at,
         c.IS_DELETED,
         c.Effective_Date,
+        c.Create_Date,
         ROW_NUMBER() OVER (
             PARTITION BY c.ID
             ORDER BY c.UPDATED_AT DESC
@@ -40,33 +39,40 @@ deduped AS (
     SELECT *
     FROM ranked_customers
     WHERE rn = 1
+    AND is_deleted= false
 )
 SELECT
-    d.ID,
-    d.NAME,
-    d.UPDATED_AT,
+    d.customer_id,
+    d.customer_name,
+    d.updated_at,
     d.IS_DELETED,
     d.Effective_Date,
+-- Compare only DATE part for late arriving logic
+    CASE
+        WHEN DATE(d.Effective_Date) < DATE(d.Create_Date)
+        THEN 'Y'
+        ELSE 'N'
+    END AS IsLateArriving,
 
     {% if is_incremental() %}
     CASE
-        WHEN existing.ID IS NULL THEN CONVERT_TIMEZONE('Asia/Kolkata', CURRENT_TIMESTAMP())::TIMESTAMP_NTZ
+        WHEN existing.customer_id IS NULL THEN CONVERT_TIMEZONE('Asia/Kolkata', CURRENT_TIMESTAMP())::TIMESTAMP_NTZ
         ELSE existing.InsertDate
     END AS InsertDate,
 
     CASE
-        WHEN existing.ID IS NULL
-             OR d.NAME <> existing.NAME
-             OR d.UPDATED_AT <> existing.UPDATED_AT
+        WHEN existing.customer_id IS NULL
+             OR d.customer_name <> existing.customer_name
+             OR d.updated_at <> existing.updated_at
              OR d.IS_DELETED <> existing.IS_DELETED
         THEN CONVERT_TIMEZONE('Asia/Kolkata', CURRENT_TIMESTAMP())::TIMESTAMP_NTZ
         ELSE existing.ActionDate
     END AS ActionDate,
 
     CASE
-        WHEN existing.ID IS NULL THEN 'I'
-        WHEN d.NAME <> existing.NAME
-             OR d.UPDATED_AT <> existing.UPDATED_AT
+        WHEN existing.customer_id IS NULL THEN 'I'
+        WHEN d.customer_name <> existing.customer_name
+             OR d.updated_at <> existing.updated_at
              OR d.IS_DELETED <> existing.IS_DELETED THEN 'U'
         ELSE 'I'
     END AS ActionType
@@ -78,12 +84,12 @@ SELECT
     'I' AS ActionType
 
     {% endif %}
-
+    
 FROM deduped d
 
 {% if is_incremental() %}
 LEFT JOIN {{ this }} existing
-    ON d.ID = existing.ID
+    ON d.customer_id = existing.customer_id
 {% else %}
 -- No join required on full refresh
 {% endif %}

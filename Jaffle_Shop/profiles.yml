@@ -7,5 +7,5 @@ jaffle_shop:
       user: 'not needed'
       role: DATADEVELOPER
       database: JAFFLE_SHOP
-      schema: TEST
-      warehouse: JAFFLE_WH
+      schema: staging
+      warehouse: TASTY_BYTES_DBT_WH
