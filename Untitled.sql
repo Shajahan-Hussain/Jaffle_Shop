@@ -1,5 +1,9 @@
 CREATE SCHEMA TESTING
 
+select * from staging.tbl_stg_customers
+
+drop table staging.tbl_stg_customers
+
 show warehouses
 
 create or replace TABLE TESTING.TEST_METADATA_TABLE (

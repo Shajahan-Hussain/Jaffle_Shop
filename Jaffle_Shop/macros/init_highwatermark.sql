@@ -1,6 +1,6 @@
 {% macro init_highwatermark(table_name) %}
 
-{% set hw_table = 'JAFFLE_SHOP.lcf.highwatermark' %}
+{% set hw_table = 'JAFFLE_SHOP.metadata.highwatermark' %}
 
 -- Step 1: Create high watermark table if it doesn't exist
 create table if not exists {{ hw_table }} (
