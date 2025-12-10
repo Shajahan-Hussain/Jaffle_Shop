@@ -8,4 +8,4 @@ jaffle_shop:
       role: DATADEVELOPER
       database: JAFFLE_SHOP
       schema: staging
-      warehouse: TASTY_BYTES_DBT_WH
+      warehouse: JAFFLE_WH

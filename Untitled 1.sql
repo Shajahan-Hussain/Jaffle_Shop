@@ -1024,3 +1024,6 @@ SELECT
 FROM deduped d
 LEFT JOIN JAFFLE_SHOP.staging.tbl_stg_customers existing
     ON d.customer_id = existing.customer_id
+
+
+    Select * from marts.tbl_Customers

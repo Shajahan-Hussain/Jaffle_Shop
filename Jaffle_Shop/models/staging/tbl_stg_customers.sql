@@ -4,9 +4,9 @@
     unique_key=["customer_id"],
     incremental_strategy='merge',
     pre_hook=[ 
-        "{{ init_highwatermark('stg_customers') }}"
+        "{{ init_highwatermark('tbl_stg_customers') }}"
     ],
-    post_hook=[ "{{ update_highwatermark('metadata.highwatermark','stg_customers', 'raw_customers', 'UPDATED_AT') }}"
+    post_hook=[ "{{ update_highwatermark('metadata.highwatermark','tbl_stg_customers', 'raw_customers', 'UPDATED_AT') }}"
         
     ]
 ) }}
