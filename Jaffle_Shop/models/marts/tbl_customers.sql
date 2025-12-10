@@ -13,7 +13,6 @@ WITH src AS (
 SELECT
     customer_id,
     customer_name,
-    updated_at,
     is_deleted,
     effective_date,
 

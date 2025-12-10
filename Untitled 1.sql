@@ -1027,3 +1027,269 @@ LEFT JOIN JAFFLE_SHOP.staging.tbl_stg_customers existing
 
 
     Select * from marts.tbl_Customers
+
+
+    -------------------------------------------
+    CREATE OR REPLACE PROCEDURE JAFFLE_SHOP.METADATA.SP_SEND_MODEL_ALERT("INVOCATION_ID" VARCHAR)
+RETURNS VARCHAR
+LANGUAGE SQL
+EXECUTE AS CALLER
+AS '
+DECLARE
+    proj STRING;
+    tag_display STRING;
+    model_err NUMBER := 0;
+
+    model_rows_html STRING;
+    html_body STRING;
+    subject_line STRING;
+BEGIN
+    ------------------------------------------------------------------
+    -- Extract project name from invocations table
+    ------------------------------------------------------------------
+    proj := (
+        SELECT PROJECT_NAME
+        FROM jaffle_shop.logs.invocations
+        WHERE COMMAND_INVOCATION_ID = :INVOCATION_ID
+        LIMIT 1
+    );
+
+    ------------------------------------------------------------------
+    -- Extract tag(s) from INVOCATION_ARGS JSON
+    ------------------------------------------------------------------
+    tag_display := (
+        SELECT IFF(
+            INVOCATION_ARGS:"select" IS NULL,
+            ''All Tags'',
+            ARRAY_TO_STRING(INVOCATION_ARGS:"select", '' '')
+        )
+        FROM jaffle_shop.logs.invocations
+        WHERE COMMAND_INVOCATION_ID = :INVOCATION_ID
+        LIMIT 1
+    );
+
+    ------------------------------------------------------------------
+    -- Count model errors
+    ------------------------------------------------------------------
+    model_err := (
+        SELECT COUNT(*)
+        FROM jaffle_shop.logs.model_executions
+        WHERE COMMAND_INVOCATION_ID = :INVOCATION_ID
+          AND status = ''error''
+    );
+
+    IF (model_err = 0) THEN
+        RETURN ''No model errors for invocation '' || INVOCATION_ID;
+    END IF;
+
+    ------------------------------------------------------------------
+    -- Build failing model rows HTML
+    ------------------------------------------------------------------
+    model_rows_html := (
+        SELECT LISTAGG(
+            ''<tr style="color:#b00000;">'' ||
+            ''<td>'' || SPLIT_PART(node_id, ''.'', 3) || ''</td>'' ||
+            ''<td>'' || COMMAND_INVOCATION_ID || ''</td>'' ||
+            ''<td>'' || UPPER(status) || ''</td>'' ||
+            ''<td>'' || REPLACE(REPLACE(COALESCE(message,''''), CHR(13), ''''), CHR(10), ''<br/>'') || ''</td>'' ||
+            ''<td>'' || TO_VARCHAR(run_started_at) || ''</td>'' ||
+            ''<td>'' || TO_VARCHAR(query_completed_at) || ''</td>'' ||
+            ''<td>'' || DATEDIFF(seconds, run_started_at, query_completed_at) || '' sec</td>'' ||
+            ''</tr>'',
+            ''''
+        )
+        FROM jaffle_shop.logs.model_executions
+        WHERE COMMAND_INVOCATION_ID = :INVOCATION_ID
+          AND status = ''error''
+    );
+
+    ------------------------------------------------------------------
+    -- Construct full HTML body
+    ------------------------------------------------------------------
+    html_body :=
+        ''<html><body style="font-family:Arial,Helvetica,sans-serif;">'' ||
+        ''<h2 style="color:#b00000;">DBT Model Failure Alert</h2>'' ||
+        ''<h3>Project: '' || proj || ''</h3>'' ||
+        ''<h3>Tags: '' || tag_display || ''</h3>'' ||
+        ''<p>Invocation ID: <b>'' || INVOCATION_ID || ''</b></p>'' ||
+        ''<p><b>'' || model_err || ''</b> model(s) failed.</p>'' ||
+
+        ''<table border="1" cellpadding="6" cellspacing="0" '' ||
+        ''style="border-collapse:collapse; width:100%; font-size:13px;">'' ||
+        ''<tr style="background-color:#f5c6cb;">'' ||
+        ''<th>Model</th><th>Invocation</th><th>Status</th>'' ||
+        ''<th>Message</th><th>Started At</th><th>Completed At</th><th>Duration</th>'' ||
+        ''</tr>'' ||
+        COALESCE(model_rows_html, ''<tr><td colspan="7">No model errors</td></tr>'') ||
+        ''</table>'' ||
+
+        ''<p style="color:#777;">Generated At: '' || CURRENT_TIMESTAMP() || ''</p>'' ||
+        ''</body></html>'';
+
+    ------------------------------------------------------------------
+    -- Email subject
+    ------------------------------------------------------------------
+    subject_line := ''DBT Model Alert – '' || proj || '' | Tags: '' || tag_display;
+
+    ------------------------------------------------------------------
+    -- Send email
+    ------------------------------------------------------------------
+    CALL SYSTEM$SEND_EMAIL(
+        ''email_alerts_integration'',
+        ''swetha.palanisamy@elait.com, kirti.sharma@elait.com, harika.dharmapuri@elait.com, sambit.nayak@elait.com, roshan.lal@elait.com'',
+        :subject_line,
+        :html_body,
+        ''text/html''
+    );
+
+    RETURN ''Model alert sent for invocation '' || INVOCATION_ID;
+
+EXCEPTION
+    WHEN OTHER THEN
+        RETURN ''Error in SP_SEND_MODEL_ALERT: '' || SQLERRM;
+END;
+';
+
+---------------------------------
+
+CREATE OR REPLACE PROCEDURE JAFFLE_SHOP.METADATA.SP_SEND_TEST_ALERT("INVOCATION_ID" VARCHAR)
+RETURNS VARCHAR
+LANGUAGE SQL
+EXECUTE AS CALLER
+AS '
+DECLARE
+    proj STRING;
+    tag_display STRING;
+
+    fail_count NUMBER := 0;
+    warn_count NUMBER := 0;
+    error_count NUMBER := 0;
+
+    test_rows_html STRING;
+    html_body STRING;
+    subject_line STRING;
+BEGIN
+    ------------------------------------------------------------------
+    -- Project name from invocations table
+    ------------------------------------------------------------------
+    proj := (
+        SELECT PROJECT_NAME
+        FROM jaffle_shop.logs.invocations
+        WHERE COMMAND_INVOCATION_ID = :INVOCATION_ID
+        LIMIT 1
+    );
+
+    ------------------------------------------------------------------
+    -- Extract tag(s) from INVOCATION_ARGS JSON
+    ------------------------------------------------------------------
+    tag_display := (
+        SELECT 
+            IFF(
+                INVOCATION_ARGS:"select" IS NULL,
+                ''All Tags'',
+                ARRAY_TO_STRING(INVOCATION_ARGS:"select", '' '')
+            )
+        FROM jaffle_shop.logs.invocations
+        WHERE COMMAND_INVOCATION_ID = :INVOCATION_ID
+        LIMIT 1
+    );
+
+    ------------------------------------------------------------------
+    -- Summary counts
+    ------------------------------------------------------------------
+    SELECT
+        COALESCE(SUM(CASE WHEN status = ''fail'' THEN 1 ELSE 0 END), 0),
+        COALESCE(SUM(CASE WHEN status = ''warn'' THEN 1 ELSE 0 END), 0),
+        COALESCE(SUM(CASE WHEN status = ''error'' THEN 1 ELSE 0 END), 0)
+    INTO fail_count, warn_count, error_count
+    FROM jaffle_shop.logs.test_executions
+    WHERE COMMAND_INVOCATION_ID = :INVOCATION_ID;
+
+    IF (fail_count = 0 AND warn_count = 0 AND error_count = 0) THEN
+        RETURN ''No test issues for invocation '' || INVOCATION_ID;
+    END IF;
+
+    ------------------------------------------------------------------
+    -- Build test rows HTML
+    ------------------------------------------------------------------
+    test_rows_html := (
+        SELECT LISTAGG(
+            ''<tr style="color:'' ||
+                CASE 
+                    WHEN status = ''fail''  THEN ''red''
+                    WHEN status = ''warn''  THEN ''orange''
+                    WHEN status = ''error'' THEN ''#b00000''
+                END || '';">'' ||
+            ''<td>'' || SPLIT_PART(node_id, ''.'', 3) || ''</td>'' ||
+            ''<td>'' || COMMAND_INVOCATION_ID || ''</td>'' ||
+            ''<td>'' || UPPER(status) || ''</td>'' ||
+            ''<td>'' || REPLACE(REPLACE(COALESCE(message,''''), CHR(13), ''''), CHR(10), ''<br/>'') || ''</td>'' ||
+            ''<td>'' || TO_VARCHAR(run_started_at) || ''</td>'' ||
+            ''<td>'' || TO_VARCHAR(query_completed_at) || ''</td>'' ||
+            ''<td>'' || DATEDIFF(seconds, run_started_at, query_completed_at) || '' sec</td>'' ||
+            ''</tr>'',
+            ''''
+        )
+        FROM jaffle_shop.logs.test_executions
+        WHERE COMMAND_INVOCATION_ID = :INVOCATION_ID
+          AND status IN (''fail'',''warn'',''error'')
+    );
+
+    ------------------------------------------------------------------
+    -- Build HTML for email
+    ------------------------------------------------------------------
+    html_body := 
+        ''<html><body style="font-family:Arial;">'' ||
+        ''<h2 style="color:#b00000;">DBT Test Alert</h2>'' ||
+        ''<h3>Project: '' || proj || ''</h3>'' ||
+        ''<h3>Tags: '' || tag_display || ''</h3>'' ||
+        ''<p>Invocation ID: <b>'' || INVOCATION_ID || ''</b></p>'' ||
+
+        ''<p>'' ||
+        ''Failed: <b>'' || fail_count || ''</b><br/>'' ||
+        ''Warning: <b>'' || warn_count || ''</b><br/>'' ||
+        ''Error: <b>''   || error_count || ''</b>'' ||
+        ''</p>'' ||
+
+        ''<table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse; width:100%;">'' ||
+        ''<tr style="background-color:#f8d7da;">'' ||
+        ''<th>Test</th><th>Invocation</th><th>Status</th>'' ||
+        ''<th>Message</th><th>Start</th><th>End</th><th>Duration</th>'' ||
+        ''</tr>'' ||
+        COALESCE(test_rows_html, ''<tr><td colspan="7">No issues</td></tr>'') ||
+        ''</table><br/>'' ||
+
+        ''<p style="color:#777;">Generated at: '' || CURRENT_TIMESTAMP() || ''</p>'' ||
+        ''</body></html>'';
+
+    ------------------------------------------------------------------
+    -- Subject line
+    ------------------------------------------------------------------
+    subject_line := ''DBT Test Alert – '' || proj || '' | Tags: '' || tag_display;
+
+    ------------------------------------------------------------------
+    -- Send email
+    ------------------------------------------------------------------
+    CALL SYSTEM$SEND_EMAIL(
+        ''email_alerts_integration'',
+        ''swetha.palanisamy@elait.com, kirti.sharma@elait.com, harika.dharmapuri@elait.com, sambit.nayak@elait.com, roshan.lal@elait.com'',
+        :subject_line,
+        :html_body,
+        ''text/html''
+    );
+
+    RETURN ''Test alert sent for invocation '' || INVOCATION_ID;
+
+EXCEPTION
+    WHEN OTHER THEN
+        RETURN ''Error in SP_SEND_TEST_ALERT: '' || SQLERRM;
+END;
+';
+
+SHOW INTEGRATIONS;
+DESC INTEGRATION EMAIL_ALERTS_INTEGRATION;
+
+select * from  marts.tbl_Customers
+
+Select * from lcf.highwatermark
+
