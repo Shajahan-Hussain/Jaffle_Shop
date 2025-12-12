@@ -8,5 +8,5 @@ jaffle_shop:
       role: DATATESTER
       database: JAFFLE_SHOP
       schema: STAGING
-      warehouse: TASTY_BYTES_DBT_WH #JAFFLE_WH # updated to new warehouse on 07-10-2025 #TASTY_BYTES_DBT_WH
+      warehouse: JAFFLE_WH #JAFFLE_WH # updated to new warehouse on 07-10-2025 #TASTY_BYTES_DBT_WH
       
