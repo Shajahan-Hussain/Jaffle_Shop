@@ -23,7 +23,7 @@ models:
             updated_at_column: updated_at
             is_deleted_column: is_deleted
       - cdc_updates:
-            tags: ['QA']
+            tags: ['ADO']
             source_model: "{{ source('ecom','raw_customers') }}"
             src_key_column: id
             stg_key_column: customer_id
