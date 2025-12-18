@@ -1,4 +1,4 @@
-name: Sync GitHub to Azure DevOps
+name: Sync All Branches to Azure DevOps (Keep History)
 
 on:
   push:
@@ -10,28 +10,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout GitHub repo
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Configure Git identity
+      - name: Configure Git
         run: |
-          git config user.name "Shajahan-Hussian"
-          git config user.email "shajahan.hussain@elait.com"
+          git config user.name "github-sync-bot"
+          git config user.email "github-sync-bot@users.noreply.github.com"
 
       - name: Add Azure DevOps remote
         run: |
           git remote add azure https://${{ secrets.ADO_PAT }}@dev.azure.com/${{ secrets.ADO_ORG }}/${{ secrets.ADO_PROJECT }}/_git/${{ secrets.ADO_REPO }}
-          
+
       - name: Fetch Azure DevOps
         run: |
           git fetch azure --prune
-          
-      - name: Push all branches
-        run: |
-          git push azure --all --force-with-lease
 
-      - name: Push all tags
+      - name: Merge Azure branches into GitHub branches
         run: |
-          git push azure --tags --force-with-lease
+          for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
+            echo "Processing branch: $branch"
+            git checkout $branch
+
+            if git show-ref --verify --quiet refs/remotes/azure/$branch; then
+              git merge azure/$branch --no-ff --no-edit || exit 1
+            else
+              echo "Branch $branch does not exist in Azure DevOps"
+            fi
+          done
+
+      - name: Push all branches to Azure DevOps
+        run: |
+          git push azure --all
+
+      - name: Push tags
+        run: |
+          git push azure --tags
