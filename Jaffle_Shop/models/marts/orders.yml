@@ -36,6 +36,14 @@ models:
             created_col: created_at
             ref_col: ordered_at
             #severity: warn
+         - incremental_data_drift:
+            compare_model: ref('stg_orders')
+            unique_key: order_id
+            updated_at: last_updated_at
+            src_updated_at: ordered_at
+         - incremental_rowcount_today:
+            compare_model: ref('stg_orders')
+            date_column: last_updated_at  
     columns:
       - name: customer_id
         tests:
