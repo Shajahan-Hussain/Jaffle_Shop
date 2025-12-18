@@ -1,0 +1,37 @@
+name: Sync GitHub to Azure DevOps
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitHub repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git identity
+        run: |
+          git config user.name "Shajahan-Hussian"
+          git config user.email "shajahan.hussain@elait.com"
+
+      - name: Add Azure DevOps remote
+        run: |
+          git remote add azure https://${{ secrets.ADO_PAT }}@dev.azure.com/${{ secrets.ADO_ORG }}/${{ secrets.ADO_PROJECT }}/_git/${{ secrets.ADO_REPO }}
+          
+      - name: Fetch Azure DevOps
+        run: |
+          git fetch azure --prune
+          
+      - name: Push all branches
+        run: |
+          git push azure --all --force-with-lease
+
+      - name: Push all tags
+        run: |
+          git push azure --tags --force-with-lease
