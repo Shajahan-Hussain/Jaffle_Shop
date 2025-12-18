@@ -23,7 +23,11 @@ jobs:
       - name: Add Azure DevOps remote
         run: |
           git remote add azure https://${{ secrets.ADO_PAT }}@dev.azure.com/${{ secrets.ADO_ORG }}/${{ secrets.ADO_PROJECT }}/_git/${{ secrets.ADO_REPO }}
-
+          
+      - name: Fetch Azure DevOps
+        run: |
+          git fetch azure --prune
+          
       - name: Push all branches
         run: |
           git push azure --all --force-with-lease
