@@ -35,6 +35,8 @@ sources:
                   - perishable
                   - sku
                 tags: ['QA']
+                meta:
+                  ado_test_name: "Validate mandatory fields are populated in raw_supplies table"
  
                 #this above testcase will fail due to raw_supplies table contains null values
         columns:

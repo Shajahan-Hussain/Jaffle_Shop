@@ -1,4 +1,10 @@
 -- Fail if record count between stg_orders and orders do not match
+{{ config(
+    tags = ['Demo1'],
+    meta = {
+        "ado_test_name": "Validate orders_vs_stg_orders_count"
+    }
+) }}
 with stg_count as (
     select count(*) as cnt from {{ ref('stg_orders') }}
 ),

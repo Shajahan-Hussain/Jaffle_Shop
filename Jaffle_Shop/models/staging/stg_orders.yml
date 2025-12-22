@@ -29,6 +29,8 @@ models:
             mappings:
               id: order_id
               store_id: location_id
+            meta:
+              ado_test_name: "Validate the source column name mapped correctly to stg tables"
     # New Derived Column Validation Tests Added
       - derived_column_validation:
           expression: "subtotal_cents / 100"

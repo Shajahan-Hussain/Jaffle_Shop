@@ -7,6 +7,8 @@ models:
         data_tests:
           - not_null:
              tags: ['Not_null']
+             meta:
+               ado_test_name: "Validate stg_order_items does not contains any null value in order_item_id column"
           - unique:
              tags: ['Unique']
       - name: order_id
