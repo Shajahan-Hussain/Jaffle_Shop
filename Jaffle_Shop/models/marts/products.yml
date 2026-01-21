@@ -6,6 +6,8 @@ models:
              schema_name: "MARTS"
              table_name: "PRODUCTS"
              tags : ['ADO']
+             meta:
+              ado_test_name: "Validate MART-Products table exist check"
 semantic_models:
   #The name of the semantic model.
   - name: products

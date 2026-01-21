@@ -1,4 +1,9 @@
-{{ config(tags=['ADO']) }}
+{{ config(
+    tags=['ADO'],
+    meta = {
+        "ado_test_name": "Verify the lookup test, that every SKU in the raw_supplies seed has a matching product_id in the stg_products staging model"
+    }
+) }}
 with supplies as (
     select distinct sku
     from {{ ref('raw_supplies') }}   -- seed (lookup)

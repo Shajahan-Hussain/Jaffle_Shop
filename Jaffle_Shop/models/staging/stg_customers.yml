@@ -44,6 +44,8 @@ models:
             mappings:
               id: customer_id
               name: customer_name
+            meta:
+              ado_test_name: "Verify that stg_customer correctly reflects renamed columns from raw_customers, ensuring id is mapped to customer_id and name to customer_name"
             #severity: warn
     columns:
       - name: customer_id
@@ -52,6 +54,8 @@ models:
           - not_null:
                 description: "To check customer_id doesnot contain NULL values"
                 tags: ['ADO']
+                meta:
+                  ado_test_name: "Verify that the customer_id column does not contain NULL values in stg_customer table"
           - unique:
                  tags: ['Unique']
  

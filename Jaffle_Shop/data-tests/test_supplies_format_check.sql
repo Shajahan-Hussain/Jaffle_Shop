@@ -1,6 +1,11 @@
 -- tests/test_format_stg_supplies.sql
 -- Purpose: Validate format standardisation for stg_supplies
-{{ config(tags=['ADO']) }}
+{{ config(
+    tags=['ADO'],
+    meta = {
+        "ado_test_name": "Verify that columns in stg_supplies follow the expected standardised formats"
+    }
+) }}
 with data as (
     select *
     from {{ ref('stg_supplies') }}

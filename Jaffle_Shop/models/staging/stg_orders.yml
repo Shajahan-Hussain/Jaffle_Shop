@@ -30,7 +30,7 @@ models:
               id: order_id
               store_id: location_id
             meta:
-              ado_test_name: "Validate the source column name mapped correctly to stg tables"
+              ado_test_name: "Verify that stg_orders correctly reflects renamed columns from raw_orders, ensuring id is mapped to order_id and store_id to location_id"
     # New Derived Column Validation Tests Added
       - derived_column_validation:
           expression: "subtotal_cents / 100"
