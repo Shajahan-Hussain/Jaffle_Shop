@@ -6,7 +6,7 @@ models:
          - table_exist_check:
              schema_name: "MARTS"
              table_name: "ORDER_ITEMS"
-             tags : ['schema_chk']
+             tags : ['ADO']
     columns:
       - name: order_item_id
         description: Unique identifier for the order item.

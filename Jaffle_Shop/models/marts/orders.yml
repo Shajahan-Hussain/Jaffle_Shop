@@ -5,7 +5,7 @@ models:
          - table_exist_check:
              schema_name: "MARTS"
              table_name: "ORDERS"
-             tags : ['Demo'] #schema_chk - changed for Demo
+             tags : ['ADO'] #schema_chk - changed for Demo
     
      # - dbt_utils.expression_is_true:  #core business logic check
          #       expression: order_items_subtotal = subtotal
@@ -27,7 +27,7 @@ models:
             #config:
              #severity: warn
              #warn_if: ">400"
-            tags: ['Ado'] #QA tag- changed for demo
+            tags: ['ADO'] #QA tag- changed for demo
          - incremental_update:
             source_table: "{{ ref('stg_orders') }}"
             key_column: order_id

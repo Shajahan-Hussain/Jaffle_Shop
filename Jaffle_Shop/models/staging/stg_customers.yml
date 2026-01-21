@@ -23,7 +23,7 @@ models:
             updated_at_column: updated_at
             is_deleted_column: is_deleted
       - cdc_updates:
-            tags: ['ADO']
+            #tags: ['ADO']
             source_model: "{{ source('ecom','raw_customers') }}"
             src_key_column: id
             stg_key_column: customer_id
@@ -39,7 +39,7 @@ models:
             tags: ['QA']
       - column_rename_check:
             description: "Validate that column names in staging match renamed columns from raw_customers"
-            #tags: ['QA']
+            tags: ['ADO']
             source_model: "{{ source('ecom', 'raw_customers') }}"
             mappings:
               id: customer_id
@@ -51,7 +51,7 @@ models:
         tests:
           - not_null:
                 description: "To check customer_id doesnot contain NULL values"
-                tags: ['Not_null']
+                tags: ['ADO']
           - unique:
                  tags: ['Unique']
  

@@ -5,7 +5,7 @@ models:
          - table_exist_check:
              schema_name: "MARTS"
              table_name: "CUSTOMERS"
-             tags : ['schema_chk']
+             tags : ['ADO']
       #- dbt_utils.expression_is_true:
        #   expression: "lifetime_spend_pretax + lifetime_tax_paid = lifetime_spend"
     columns:
