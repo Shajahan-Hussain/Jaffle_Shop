@@ -52,7 +52,7 @@ models:
             id: customer_id
             name: customer_name
           meta:
-            ado_test_name: "Verify that stg_customer correctly reflects renamed columns from raw_customers, ensuring id is mapped to customer_id and name to customer_name"
+            ado_test_name: "To verify that stg_customer correctly reflects renamed columns from raw_customers"
           #severity: warn
 
     columns:
