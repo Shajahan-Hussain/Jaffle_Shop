@@ -7,7 +7,7 @@ models:
              table_name: "ORDERS"
              tags : ['ADO']
              meta:
-              ado_test_name: "Validate orders table exists in the target"
+              ado_test_name: "To verify whether orders table exists in the Mart schema under target database"
               #schema_chk - changed for Demo
     
      # - dbt_utils.expression_is_true:  #core business logic check
@@ -26,7 +26,7 @@ models:
             compare_model: ref('stg_order_items')
             join_key: "order_id"
             meta:
-              ado_test_name: "Join Validation Test-Validate Join Key Validation between orders and order_items table"
+              ado_test_name: "Verify Join Key Validation between orders and order_items table - Join Validation Test"
             #config:
              #severity: warn
              #warn_if: ">400"

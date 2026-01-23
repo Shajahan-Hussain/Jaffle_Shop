@@ -2,7 +2,7 @@
 {{ config(
     tags = ['ADO'],
     meta = {
-        "ado_test_name": "Validate if any order refers to a non existing customers"
+        "ado_test_name": "Verify if any order refers to a non existing customers in stg_orders table"
     }
 ) }}
 select o.order_id, o.customer_id

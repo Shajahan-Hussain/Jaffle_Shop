@@ -7,7 +7,7 @@ models:
              table_name: "CUSTOMERS"
              tags : ['ADO']
              meta:
-              ado_test_name: "Validate CUSTOMERS tables exists under MART schema in target database"
+              ado_test_name: "Verify whether CUSTOMERS tables exists under MART schema in target database"
       #- dbt_utils.expression_is_true:
        #   expression: "lifetime_spend_pretax + lifetime_tax_paid = lifetime_spend"
     columns:
