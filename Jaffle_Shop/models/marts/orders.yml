@@ -7,7 +7,7 @@ models:
              table_name: "ORDERS"
              tags : ['ADO']
              meta:
-              ado_test_name: "Validate ORDERS tables exists under MART schema in target database"
+              ado_test_name: "Validate orders table exists in the target"
               #schema_chk - changed for Demo
     
      # - dbt_utils.expression_is_true:  #core business logic check

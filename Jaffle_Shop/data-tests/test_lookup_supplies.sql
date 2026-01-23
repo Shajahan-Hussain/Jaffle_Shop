@@ -1,7 +1,7 @@
 {{ config(
     tags=['ADO'],
     meta = {
-        "ado_test_name": "Verify the lookup test, that every SKU in the raw_supplies seed has a matching product_id in the stg_products staging model"
+        "ado_test_name": "Validate every sku in the seed has matching product id in the stg_products"
     }
 ) }}
 with supplies as (

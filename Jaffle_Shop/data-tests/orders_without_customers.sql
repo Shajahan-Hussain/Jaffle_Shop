@@ -1,8 +1,8 @@
 -- Fail if any order refers to a non-existing customer
 {{ config(
-    tags=['ADO'],
+    tags = ['ADO'],
     meta = {
-        "ado_test_name": "Verify that no records in stg_order reference a non-existent customer_id from stg_customer"
+        "ado_test_name": "Validate if any order refers to a non existing customers"
     }
 ) }}
 select o.order_id, o.customer_id
