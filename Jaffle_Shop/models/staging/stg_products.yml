@@ -1,6 +1,9 @@
 models:
   - name: stg_products
     description: Product (food and drink items that can be ordered) data with basic cleaning and transformation applied, one row per product.
+    tests:
+      - no_duplicates_in_stg:
+            columns: ['PRODUCT_ID', 'PRODUCT_NAME']
     columns:
       - name: product_id
         description: The unique key for each product.

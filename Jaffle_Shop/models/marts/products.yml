@@ -5,7 +5,7 @@ models:
          - table_exist_check:
              schema_name: "MARTS"
              table_name: "PRODUCTS"
-             tags : ['ADO']
+             tags : ['ADOPIPE']
              meta:
               ado_test_name: "Validate MART-Products table exist check"
 semantic_models:

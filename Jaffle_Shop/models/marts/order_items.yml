@@ -6,7 +6,7 @@ models:
          - table_exist_check:
              schema_name: "MARTS"
              table_name: "ORDER_ITEMS"
-             tags : ['ADO']
+             tags : ['ADOPIPE']
              meta:
               ado_test_name: "Validate MART - Order Items table exist check"
     columns:
