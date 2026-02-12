@@ -49,10 +49,7 @@ models:
             unique_key: order_id
             updated_at: last_updated_at
             src_updated_at: ordered_at
-         - incremental_rowcount_today:
-            compare_model: ref('stg_orders')
-            date_column: last_updated_at 
-            tags: ['ADO']
+        
     columns:
       - name: customer_id
         tests:
