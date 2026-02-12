@@ -3,9 +3,11 @@ models:
   - name: supplies
     tests:
          - table_exist_check:
-             schema_name: "MARTS"
-             table_name: "SUPPLIES"
-             tags : ['schema_chk']
+            schema_name: MARTS
+            table_name: SUPPLIES
+            database_name: "{{ target.database }}"
+            metadata_table_name: TABLES   
+            tags : ['schema_chk']
          - reconciliation_name_check:
             raw_table: "{{ source('ecom','raw_supplies') }}"
             key_column: id

@@ -1,17 +1,17 @@
-{% test cdc_rowcount_reconciliation(model, source_model, staging_model, source_key, staging_key, updated_at_column, is_deleted_column) %}
+{% test cdc_rowcount_reconciliation(model, source_model, staging_model, source_key, staging_key, updated_at_column, is_deleted_column,deleted_flag_value,key_alias) %}
  
 with source_latest as (
     -- Take only the latest non-deleted record per ID
-    select {{ source_key }} as id,
+    select {{ source_key }} as {{ key_alias }},
            max({{ updated_at_column }}) as latest_update
     from {{ source_model }}
-    where {{ is_deleted_column }} = false
+    where {{ is_deleted_column }} = {{ deleted_flag_value }}
     group by {{ source_key }}
 ),
  
 staging_latest as (
     -- Staging should already have only the latest record per ID
-    select {{ staging_key }} as id
+    select {{ staging_key }} as {{ key_alias }}
     from {{ staging_model }}
 ),
  

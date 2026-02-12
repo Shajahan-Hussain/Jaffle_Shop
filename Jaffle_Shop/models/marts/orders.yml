@@ -5,6 +5,8 @@ models:
          - table_exist_check:
              schema_name: "MARTS"
              table_name: "ORDERS"
+             database_name: "{{ target.database }}"  # pass target database
+             metadata_table_name: TABLES            # usually TABLES
              tags : ['ADO']
              meta:
               ado_test_name: "To verify whether orders table exists in the Mart schema under target database"
@@ -25,8 +27,9 @@ models:
           #args:
             compare_model: ref('stg_order_items')
             join_key: "order_id"
+            key_alias: order_key
             meta:
-              ado_test_name: "Verify Join Key Validation between orders and order_items table - Join Validation Test"
+              ado_test_name: "Join Validation Test-Validate Join Key Validation between orders and order_items table"
             #config:
              #severity: warn
              #warn_if: ">400"
@@ -35,9 +38,11 @@ models:
             source_table: "{{ ref('stg_orders') }}"
             key_column: order_id
             business_columns: subtotal,tax_paid,customer_id
+            key_alias: order_id
             prev_timestamp: "2025-09-24 03:28:12.615 -0700"
             created_col: created_at
             ref_col: ordered_at
+            updated_at_col: last_updated_at
             #severity: warn
          - incremental_data_drift:
             compare_model: ref('stg_orders')

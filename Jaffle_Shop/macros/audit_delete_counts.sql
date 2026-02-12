@@ -1,15 +1,15 @@
-{% test audit_delete_counts(model, raw_table, src_key_column, stg_key_column, is_deleted_column) %}
+{% test audit_delete_counts(model, raw_table, src_key_column, stg_key_column, is_deleted_column, deleted_flag_value,audit_action_column, delete_action_value) %}
 
 with raw_deleted as (
   select count(distinct {{ src_key_column }}) as raw_cnt
   from {{ raw_table }}
-  where {{ is_deleted_column }} = true
+  where {{ is_deleted_column }} = {{ deleted_flag_value }}
 ),
 
 audit_deleted as (
   select count(distinct {{ stg_key_column }}) as audit_cnt
   from {{ model }}
-  where audit_action = 'DELETE'
+  where {{ audit_action_column }} = '{{ delete_action_value }}'
 )
 
 select r.raw_cnt, a.audit_cnt

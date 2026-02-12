@@ -10,6 +10,8 @@ models:
             key_col_model: supply_id
             raw_cost_col: cost
             staging_cost_col: supply_cost
+            scale_factor: 100 
+            tolerance: 0.5 
     description: >
       List of our supply expenses data with basic cleaning and transformation applied.
 

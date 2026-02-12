@@ -5,6 +5,8 @@ models:
          - table_exist_check:
              schema_name: "MARTS"
              table_name: "PRODUCTS"
+             database_name: "{{ target.database }}"  # pass target database
+             metadata_table_name: TABLES   
              tags : ['ADOPIPE']
              meta:
               ado_test_name: "Validate MART-Products table exist check"

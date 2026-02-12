@@ -7,4 +7,7 @@ models:
             src_key_column: id
             stg_key_column: customer_id
             is_deleted_column: is_deleted
+            deleted_flag_value: true
+            audit_action_column: audit_action
+            delete_action_value: DELETE
             tags: ['QA']

@@ -1,9 +1,9 @@
-{% test active_counts_match(model, source_table, key_column, is_deleted_column) %}
+{% test active_counts_match(model, source_table, key_column, is_deleted_column, active_flag_value) %}
 
 with raw_active as (
     select count(distinct {{ key_column }}) as cnt
     from {{ source_table }}
-    where {{ is_deleted_column }} = false
+    where {{ is_deleted_column }} = {{ active_flag_value }}
 ),
 
 staging as (

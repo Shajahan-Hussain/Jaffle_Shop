@@ -4,41 +4,51 @@ models:
   - name: stg_customers
     tests:
       - cdc_inserts:
-          description: "CDC Data check"
-          source_model: "{{ source('ecom','raw_customers') }}"
-          staging_model: "{{ ref('stg_customers') }}"
-          src_key_column: id
-          stg_key_column: customer_id
-          updated_at_column: updated_at
-
+            description: "CDC Data check"
+            tags: ['QA']
+            source_model: "{{ source('ecom','raw_customers') }}"
+            staging_model: "{{ ref('stg_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            updated_at_column: updated_at
+            is_deleted_column: is_deleted
+            active_flag_value: false
       - not_deleted_in_staging:
-          description: "To Check deleted records not present in staging"
-          raw_table: "{{ source('ecom','raw_customers') }}"
-          src_key_column: id
-          stg_key_column: customer_id
-          is_deleted_column: is_deleted
+            description: "To Check deleted records not present in staging"
+            tags: ['QA']
+            raw_table: "{{ source('ecom','raw_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            is_deleted_column: is_deleted
+            deleted_flag_value: true
 
       - cdc_rowcount_reconciliation:
-          source_model: "{{ source('ecom','raw_customers') }}"
-          staging_model: "{{ ref('stg_customers') }}"
-          source_key: id
-          staging_key: customer_id
-          updated_at_column: updated_at
-          is_deleted_column: is_deleted
+            source_model: "{{ source('ecom','raw_customers') }}"
+            staging_model: "{{ ref('stg_customers') }}"
+            source_key: id
+            staging_key: customer_id
+            updated_at_column: updated_at
+            is_deleted_column: is_deleted
+            deleted_flag_value: false
+            key_alias: cust_id
 
       - cdc_updates:
-          #tags: ['ADO']
-          source_model: "{{ source('ecom','raw_customers') }}"
-          src_key_column: id
-          stg_key_column: customer_id
-          updated_at_column: updated_at
-          is_deleted_column: is_deleted
+            tags: ['QA']
+            source_model: "{{ source('ecom','raw_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            updated_at_column: updated_at
+            is_deleted_column: is_deleted
+            active_flag_value: false
+            key_alias: cust_id
 
       - active_counts_match:
-          source_table: "{{ source('ecom','raw_customers') }}"
-          key_column: id
-          is_deleted_column: is_deleted
-          tags: ['QA']
+            source_table: "{{ source('ecom','raw_customers') }}"
+            key_column: id
+            is_deleted_column: is_deleted
+            active_flag_value: false
+            #tags: ['QA']
+          
 
       - no_duplicate_customers:
           key_column: customer_id
