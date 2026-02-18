@@ -1,3 +1,14 @@
+-- Author: Harika
+-- Create Date: 12/09/2025
+-- Description: Checks count consistency between source active records and target table.
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       12/09/2025   Harika Dharmapuri      Initial version
+-- 0.2       06/02/2026   Harika Dharmapuri      updated the hardcoded values
+-- 1.0       06/02/2026   Harika Dharmapuri      Final version
+
+
 {% test active_counts_match(model, source_table, key_column, is_deleted_column, active_flag_value) %}
 
 with raw_active as (

@@ -1,4 +1,11 @@
--- Purpose: Verify default values in stg_supplies are correctly applied when raw data is missing.
+-- Author: Harika Dharmapuri
+-- Create Date: 16/10/2025
+-- Description: Ensures null source values are replaced with defined defaults in staging
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       16/10/2025   Harika Dharmapuri        Initial version
+-- 1.0       16/10/2025   Harika Dharmapuri        Final version
  
 with raw as (
     select 
@@ -34,7 +41,7 @@ joined as (
 select *
 from joined
 where 
-    -- ❌ CASE : Raw is NULL but staging failed to apply default
+    -- CASE : Raw is NULL but staging failed to apply default
      (raw_name is null and supply_name != 'UNKNOWN')
     or (raw_cost is null and supply_cost != 0)
     or (raw_perishable is null and is_perishable_supply != FALSE)

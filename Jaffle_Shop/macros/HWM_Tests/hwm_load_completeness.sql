@@ -1,3 +1,14 @@
+-- Author: Harika
+-- Create Date: 24/10/2025
+-- Description: Checks for missing records between source and target within HWM period.
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       24/10/2025   Harika Dharmapuri      Initial version
+-- 0.2       06/02/2026   Harika Dharmapuri      updated the hardcoded values
+-- 1.0       06/02/2026   Harika Dharmapuri      Final version
+
+
 {% test hwm_load_completeness(model, source_name, source_table, updated_at_col,highwatermark_table,id_column,name_column,is_deleted_column,target_key_column,updated_at_alias,hwm_start_column,hwm_end_column) %}
 
 WITH hwm AS (

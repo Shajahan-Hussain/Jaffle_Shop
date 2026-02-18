@@ -1,3 +1,12 @@
+-- Author: Kirti Sharma
+-- Create Date: 09/11/2025
+-- Description: Ensures last 7 days of raw orders are successfully loaded into staging and mart models.
+
+-- Change History
+-- Version   Date         User                   Change
+-- 0.1       09/11/2025   Kirti Sharma           Initial version
+-- 1.0       09/11/2025   Kirti Sharma           Final version
+
 WITH recent_raw AS (
     SELECT *
     FROM {{ source('ecom', 'raw_orders') }}

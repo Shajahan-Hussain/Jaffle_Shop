@@ -1,3 +1,12 @@
+-- Author: Harika
+-- Create Date: 07/10/2025
+-- Description: Verifies column-level reconciliation between raw and staging
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       07/10/2025   Harika Dharmapuri      Initial version
+-- 1.0       07/10/2025   Harika Dharmapuri      Final version
+
 {% test reconciliation_name_check(model, raw_table, key_column, key_col_model, compare_column, compare_col_model) %}
 
 with src as (

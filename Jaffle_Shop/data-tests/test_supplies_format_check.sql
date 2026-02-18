@@ -1,5 +1,12 @@
--- tests/test_format_stg_supplies.sql
--- Purpose: Validate format standardisation for stg_supplies
+-- Author: Harika Dharmapuri
+-- Create Date: 13/10/2025
+-- Description: Validate format standardisation for stg_supplies
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       13/10/2025   Harika Dharmapuri        Initial version
+-- 1.0       13/10/2025   Harika Dharmapuri        Final version
+
 {{ config(
     tags=['ADO'],
     meta = {
@@ -14,14 +21,14 @@ with data as (
 select *
 from data
 where
-    -- 1️⃣ UUID check (32-char hex string)
+    --  UUID check (32-char hex string)
     supply_uuid not regexp '^[0-9a-f]{32}$'
 
-    -- 2️⃣ Supply ID check (non-null, matches SUP-001 pattern)
+    --  Supply ID check (non-null, matches SUP-001 pattern)
     or supply_id is null
     or supply_id not regexp '^SUP-[0-9]{3}$'
 
-    -- 3️⃣ Product ID check (non-null, matches JAF-001 pattern)
+    --  Product ID check (non-null, matches JAF-001 pattern)
     or product_id is null
     or product_id not regexp '^(JAF|BEV|ORG)-[0-9]{3}$'
 

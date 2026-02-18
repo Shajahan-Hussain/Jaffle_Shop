@@ -1,4 +1,12 @@
--- macros/mandatory_fields_check.sql
+-- Author: Sambit Nayak
+-- Create Date: 25/09/2025
+-- Description: Validates mandatory fields are not null or empty in the model.
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       25/09/2025   Sambit Nayak      Initial version
+-- 1.0       25/09/2025   Sambit Nayak      Final version
+
 {% test mandatory_fields_check(model, columns) %}
 
 select

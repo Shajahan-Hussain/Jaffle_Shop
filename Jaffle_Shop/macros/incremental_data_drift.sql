@@ -1,3 +1,13 @@
+-- Author: Kirti sharma
+-- Create Date: 09/11/2025
+-- Description: Validates incremental target records are up-to-date with source data.
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       09/11/2025   Kirti sharma      Initial version
+-- 1.0       09/11/2025   Kirti Sharma      Final version
+
+
 {% test incremental_data_drift(model, compare_model, unique_key, updated_at, src_updated_at) %}
 
 with source as (

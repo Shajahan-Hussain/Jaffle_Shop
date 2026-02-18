@@ -1,3 +1,13 @@
+-- Author: Sambit Nayak
+-- Create Date: 16/09/2025
+-- Description: Validates modified source records are correctly updated in target.
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       16/09/2025   Sambit Nayak           Initial version
+-- 0.2       06/02/2026   Harika Dharmapuri      updated the hardcoded values
+-- 1.0       06/02/2026   Harika Dharmapuri      Final version
+
 {% test incremental_update(
     model,
     source_table,
@@ -41,7 +51,7 @@ compare as (
         {% for col in cols %}
             t.{{ col }} as {{ col }}{% if not loop.last %},{% endif %}
         {% endfor %}
-    from tgt t
+    from t\gt t
     join updated_stg s
       on t.{{ key_alias }} = s.{{ key_alias }}
     where

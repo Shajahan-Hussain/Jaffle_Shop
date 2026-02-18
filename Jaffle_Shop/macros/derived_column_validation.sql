@@ -1,3 +1,12 @@
+-- Author: Kirti sharma
+-- Create Date: 15/10/2025
+-- Description: Validates derived column values match expected calculation logic..
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       15/10/2025   Kirti sharma      Initial version
+-- 1.0       15/10/2025   Kirti Sharma      Final version
+
 {% test derived_column_validation(model, expression, column_name) %}
 
 -- Derived Column Validation Test

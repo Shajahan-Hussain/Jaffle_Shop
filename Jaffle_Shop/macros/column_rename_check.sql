@@ -1,3 +1,12 @@
+-- Author: Kirti sharma
+-- Create Date: 04/11/2025
+-- Description: Validates renamed column values match between source and staging model.
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       04/11/2025   Kirti sharma      Initial version
+-- 1.0       04/11/2025   Kirti Sharma      Final version
+
 {% test column_rename_check(model, source_model, mappings) %}
 
 {% set union_queries = [] %}

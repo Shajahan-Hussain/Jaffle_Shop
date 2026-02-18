@@ -1,3 +1,13 @@
+-- Author: Harika
+-- Create Date: 15/10/2025
+-- Description: Ensures aggregated cost values match after scaling adjustment.
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       15/10/2025   Harika Dharmapuri      Initial version
+-- 0.2       06/02/2026   Harika Dharmapuri      updated the hardcoded values
+-- 1.0       06/02/2026   Harika Dharmapuri      Final version
+
 {% test supply_cost_check( 
       model, 
       raw_table, 

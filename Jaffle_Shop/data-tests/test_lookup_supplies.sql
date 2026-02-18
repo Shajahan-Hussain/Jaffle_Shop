@@ -1,3 +1,12 @@
+-- Author: Harika Dharmapuri
+-- Create Date: 16/10/2025
+-- Description: Validates that all SKUs from seed data exist as product IDs in the staging
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       16/10/2025   Harika Dharmapuri        Initial version
+-- 1.0       16/10/2025   Harika Dharmapuri        Final version
+
 {{ config(
     tags=['ADO'],
     meta = {
