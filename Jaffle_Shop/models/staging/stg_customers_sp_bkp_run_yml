@@ -1,0 +1,61 @@
+version: 2
+models:
+  - name: stg_customers_sp_run
+    tests:
+      - cdc_bkp_inserts:
+            description: "CDC Data check"
+            source_model: "{{ source('ecom','raw_customers') }}"
+            staging_model: "{{ ref('stg_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            updated_at_column: updated_at
+      - not_deleted_bkp_in_staging:
+            description: "To Check deleted records not present in staging"
+            raw_table: "{{ source('ecom','raw_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            is_deleted_column: is_deleted
+      - cdc_rowcount_bkp_reconciliation:
+            source_model: "{{ source('ecom','raw_customers') }}"
+            staging_model: "{{ ref('stg_customers') }}"
+            source_key: id
+            staging_key: customer_id
+            updated_at_column: updated_at
+            is_deleted_column: is_deleted
+      - cdc_updates_bkp:
+            tags: ['QA']
+            source_model: "{{ source('ecom','raw_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            updated_at_column: updated_at
+            is_deleted_column: is_deleted
+      #- active_counts_match:
+          #  source_table: "{{ source('ecom','raw_customers') }}"
+          #  key_column: id
+          #  is_deleted_column: is_deleted
+           # tags: ['QA']
+      - no_duplicate_customers_bkp:
+            key_column: customer_id
+            tags: ['QA']
+      - column_rename_check_bkp:
+            description: "Validate that column names in staging match renamed columns from raw_customers"
+            #tags: ['QA']
+            source_model: "{{ source('ecom', 'raw_customers') }}"
+            mappings:
+              id: customer_id
+              name: customer_name
+            #severity: warn
+    columns:
+      - name: customer_id
+        description: "The unique key for each customer."
+        tests:
+          - not_null:
+                description: "To check customer_id doesnot contain NULL values"
+                tags: ['Not_null']
+          - unique:
+                 tags: ['Unique']
+ 
+      - name: customer_name
+        description: "Customer name."
+        tests:
+          - not_null

@@ -1,10 +1,13 @@
 version: 2
-
 models:
   - name: audit_deleted_customers_history
     tests:
-      - Audit_delete_counts:
-          raw_table: source('ecom', 'raw_customers')   # ✅ use source or ref correctly
-          key_column: id
-      
-
+      - audit_delete_counts:
+            raw_table: "{{ source('ecom','raw_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            is_deleted_column: is_deleted
+            deleted_flag_value: true
+            audit_action_column: audit_action
+            delete_action_value: DELETE
+            tags: ['QA']

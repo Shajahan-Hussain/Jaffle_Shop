@@ -20,7 +20,16 @@ clean-targets:
 
 vars:
   "dbt_date:time_zone": "America/Los_Angeles"
+  
+on-run-end:
+  - "truncate table JAFFLE_SHOP.LOGS.MODELS"
+  - "truncate table JAFFLE_SHOP.LOGS.TESTS"
+  - "truncate table JAFFLE_SHOP.LOGS.SNAPSHOTS"
+  - "truncate table JAFFLE_SHOP.LOGS.SEEDS"
+  - "truncate table JAFFLE_SHOP.LOGS.SOURCES"
+  - "{{ dbt_artifacts.upload_results(results) }}"
 
+  
 seeds:
   Jaffle_Shop:
     +schema: raw
@@ -35,3 +44,11 @@ models:
     marts:
       +schema: marts
       +materialized: table
+  dbt_artifacts:
+    +enabled: false
+    sources: 
+      +enabled: true
+      +schema: logs
+
+
+

@@ -1,8 +1,21 @@
+version: 2
+models:
+  - name: products
+    tests:
+         - table_exist_check:
+             schema_name: "MARTS"
+             table_name: "PRODUCTS"
+             database_name: "{{ target.database }}"  # pass target database
+             metadata_table_name: TABLES   
+             tags : ['ADOPIPE']
+             meta:
+              ado_test_name: "Validate MART-Products table exist check"
 semantic_models:
   #The name of the semantic model.
   - name: products
-    description: |
+    description:
       Product dimension table. The grain of the table is one row per product.
+    
     #The name of the dbt model and schema
     model: ref('products')
     #Entities. These usually corespond to keys in the table.

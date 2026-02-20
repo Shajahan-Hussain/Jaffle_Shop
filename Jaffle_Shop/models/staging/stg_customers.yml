@@ -1,9 +1,83 @@
+version: 2
+
 models:
   - name: stg_customers
-    description: Customer data with basic cleaning and transformation applied, one row per customer.
+    tests:
+      - cdc_inserts:
+            description: "CDC Data check"
+            tags: ['QA']
+            source_model: "{{ source('ecom','raw_customers') }}"
+            staging_model: "{{ ref('stg_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            updated_at_column: updated_at
+            is_deleted_column: is_deleted
+            active_flag_value: false
+      - not_deleted_in_staging:
+            description: "To Check deleted records not present in staging"
+            tags: ['QA']
+            raw_table: "{{ source('ecom','raw_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            is_deleted_column: is_deleted
+            deleted_flag_value: true
+
+      - cdc_rowcount_reconciliation:
+            source_model: "{{ source('ecom','raw_customers') }}"
+            staging_model: "{{ ref('stg_customers') }}"
+            source_key: id
+            staging_key: customer_id
+            updated_at_column: updated_at
+            is_deleted_column: is_deleted
+            deleted_flag_value: false
+            key_alias: cust_id
+
+      - cdc_updates:
+            tags: ['QA']
+            source_model: "{{ source('ecom','raw_customers') }}"
+            src_key_column: id
+            stg_key_column: customer_id
+            updated_at_column: updated_at
+            is_deleted_column: is_deleted
+            active_flag_value: false
+            key_alias: cust_id
+
+      - active_counts_match:
+            source_table: "{{ source('ecom','raw_customers') }}"
+            key_column: id
+            is_deleted_column: is_deleted
+            active_flag_value: false
+            #tags: ['QA']
+          
+
+      - no_duplicate_customers:
+          key_column: customer_id
+          tags: ['QA']
+
+      - column_rename_check:
+          description: "Validate that column names in staging match renamed columns from raw_customers"
+          tags: ['ADO']
+          source_model: "{{ source('ecom', 'raw_customers') }}"
+          mappings:
+            id: customer_id
+            name: customer_name
+          meta:
+            ado_test_name: "To verify that stg_customer correctly reflects renamed columns from raw_customers"
+          #severity: warn
+
     columns:
       - name: customer_id
-        description: The unique key for each customer.
-        data_tests:
+        description: "The unique key for each customer."
+        tests:
+          - not_null:
+              description: "To check customer_id does not contain NULL values"
+              tags: ['ADO']
+              meta:
+                ado_test_name: "Verify that the customer_id column does not contain NULL values in stg_customer table"
+          - unique:
+              tags: ['Unique']
+
+      - name: customer_name
+        description: "Customer name."
+        tests:
           - not_null
-          - unique

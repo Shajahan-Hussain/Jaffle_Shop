@@ -1,3 +1,11 @@
+-- Author: Kirti Sharma
+-- Create Date: 16/09/2025
+-- Description: Validates column-level value consistency between two models.
+
+-- Change History
+-- Version   Date         User                     Change
+-- 0.1       16/09/2025   Kirti Sharma           Initial version
+-- 1.0       16/09/2025   Kirti Sharma           Final version
 {% test minus_compare_column(model, compare_model, column_name) %}
 
 WITH validation_errors AS (

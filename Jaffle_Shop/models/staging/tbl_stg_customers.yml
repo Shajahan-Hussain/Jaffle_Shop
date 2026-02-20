@@ -1,0 +1,27 @@
+version: 2
+models:
+  - name: tbl_stg_customers
+    tests:
+
+      - hwm_load_completeness:
+            source_name: ecom
+            source_table: raw_customers
+            updated_at_col: updated_at
+            highwatermark_table: metadata.highwatermark
+            hwm_start_column: start_date
+            hwm_end_column: end_date
+            id_column: ID
+            name_column: NAME
+            is_deleted_column: IS_DELETED
+            target_key_column: customer_id
+            updated_at_alias: UPDATED_AT
+      - hwm_start_end_check:
+            description: "lcf.highwatermark latest startdate check"
+            tags: ['QA']
+            source_name: ecom
+            source_table: raw_customers
+            hwm_table: Metadata.highwatermark
+            updated_at_column: updated_at
+            hwm_start_column: start_date
+            hwm_end_column: end_date
+            Default_end_date: '9999-12-31 00:00:00'

@@ -5,16 +5,58 @@ models:
       # Check arithmetic consistency after cents-to-dollars conversion
       # Ensures order_total = subtotal + tax_paid
       - dbt_utils.expression_is_true:
-          expression: "ROUND(order_total, 2) = ROUND(subtotal + tax_paid, 2)" # old exxp- "order_total - tax_paid = subtotal" 
+          expression: "order_total - tax_paid = subtotal"  #"ROUND(order_total, 2) = ROUND(subtotal + tax_paid, 2)" # old exxp- "order_total - tax_paid = subtotal" 
+      - mandatory_fields_check:
+            columns:
+                - ORDER_ID
+                - LOCATION_ID
+                - CUSTOMER_ID
+                - SUBTOTAL_CENTS
+                - TAX_PAID_CENTS
+                - ORDER_TOTAL_CENTS
+                - SUBTOTAL
+                - TAX_PAID
+                - ORDER_TOTAL
+                - ORDERED_AT
+                - ROW_NUM
+# Custom Generic Test - Verify no duplicate records introduced after staging transformations
+      - no_duplicates_in_stg:
+          columns: ["ORDER_ID", "CUSTOMER_ID"]
+      - column_rename_check:
+            description: "Column Name Retest for Stg_Orders"
+            tags: ['ADO'] #QA -changed for Demo
+            source_model: "{{ source('ecom', 'raw_orders') }}"
+            mappings:
+              id: order_id
+              store_id: location_id
+            meta:
+              ado_test_name: "Verify that column names from the raw source are transformed to the expected staging names as per the defined mapping rules for stg_orders table"
+    # New Derived Column Validation Tests Added
+      - derived_column_validation:
+          expression: "subtotal_cents / 100"
+          column_name: "subtotal"
 
+      - derived_column_validation:
+          expression: "tax_paid_cents / 100"
+          column_name: "tax_paid"
+
+      - derived_column_validation:
+          expression: "order_total_cents / 100"
+          column_name: "order_total"
     columns:
       - name: order_id
         description: The unique key for each order.
         data_tests:
           # Every order must have an ID and null value
-          - not_null
+          - not_null:
+               tags: ['Demo'] #Not_null - changed for Demo
+               meta:
+                ado_test_name: "Validate stg_orders does not contains null values in order_id"
           # No duplicate order IDs allowed
-          - unique
+          - unique:
+               tags: ['Demo'] # Unique - changed for Demo
+               meta:
+                ado_test_name: "Validate duplicate order_id not exists in stg_orders"
 
       - name: subtotal
         description: Subtotal amount in dollars, converted from cents.
