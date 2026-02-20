@@ -1,6 +1,6 @@
 -- Author: Harika
 -- Create Date: 12/09/2025
--- Description: Ensures deleted records in source are not present in staging model.
+-- Description: Validates that logically deleted records in the source are excluded from the target table.
 
 -- Change History
 -- Version   Date         User                     Change

@@ -1,6 +1,6 @@
 -- Author: Kirti Sharma
 -- Create Date: 07/10/2025
--- Description: Identifies duplicate records across selected columns.
+-- Description: Validates no duplicates on key columns.
 
 -- Change History
 -- Version   Date         User                     Change

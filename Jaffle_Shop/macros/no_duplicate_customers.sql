@@ -1,6 +1,6 @@
 -- Author: Kirti Sharma
 -- Create Date: 07/10/2025
--- Description: Ensures no duplicate records exist for specified key column.
+-- Description: Validates that no duplicate records exist based on the defined key columns.
 
 -- Change History
 -- Version   Date         User                     Change

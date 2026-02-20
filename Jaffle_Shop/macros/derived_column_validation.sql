@@ -1,6 +1,6 @@
 -- Author: Kirti sharma
 -- Create Date: 15/10/2025
--- Description: Validates derived column values match expected calculation logic..
+-- Description: Validates that derived column values align with the defined calculation logic.
 
 -- Change History
 -- Version   Date         User                     Change

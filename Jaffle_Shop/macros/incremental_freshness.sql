@@ -1,6 +1,6 @@
 -- Author: Kirti sharma
 -- Create Date: 09/11/2025
--- Description: Checks freshness of target data against source.
+-- Description: Validates max timestamp consistency between source and target.
 
 -- Change History
 -- Version   Date         User                     Change

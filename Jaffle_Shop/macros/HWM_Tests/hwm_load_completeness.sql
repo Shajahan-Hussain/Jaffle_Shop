@@ -1,6 +1,6 @@
 -- Author: Harika
 -- Create Date: 24/10/2025
--- Description: Checks for missing records between source and target within HWM period.
+-- Description: Validates no missing records between source and target within the HWM window.
 
 -- Change History
 -- Version   Date         User                     Change

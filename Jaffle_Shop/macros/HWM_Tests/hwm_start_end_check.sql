@@ -1,6 +1,6 @@
 -- Author: Harika
 -- Create Date: 24/10/2025
--- Description: Ensures HWM control table reflects the latest source update timestamp.
+-- Description: Validates that the HWM control table stores the latest source update timestamp.
  
 -- Change History
 -- Version   Date         User                     Change

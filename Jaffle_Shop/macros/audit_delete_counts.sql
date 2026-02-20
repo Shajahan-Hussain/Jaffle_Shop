@@ -1,6 +1,6 @@
 -- Author: Harika
 -- Create Date: 12/09/2025
--- Description: Compares delete counts between source and audit model.
+-- Description: Validates that delete record counts match between source and audit model.
 
 -- Change History
 -- Version   Date         User                     Change

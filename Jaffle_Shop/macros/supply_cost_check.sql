@@ -1,6 +1,6 @@
 -- Author: Harika
 -- Create Date: 15/10/2025
--- Description: Ensures aggregated cost values match after scaling adjustment.
+-- Description: Validates aggregated supply cost reconciliation between source and target.
 
 -- Change History
 -- Version   Date         User                     Change

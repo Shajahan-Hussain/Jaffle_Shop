@@ -1,6 +1,6 @@
 -- Author: Harika
 -- Create Date: 12/09/2025
--- Description: Checks count consistency between source active records and target table.
+-- Description: Validates that the count of active records matches between source and target layers.
 
 -- Change History
 -- Version   Date         User                     Change

@@ -1,6 +1,6 @@
 -- Author: Harika
 -- Create Date: 18/11/2025
--- Description: Checks existence of required table in target schema.
+-- Description: Validates that the specified table exists in the target schema.
 
 -- Change History
 -- Version   Date         User                     Change

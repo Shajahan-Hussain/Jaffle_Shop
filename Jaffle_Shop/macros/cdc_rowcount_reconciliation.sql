@@ -1,6 +1,6 @@
 -- Author: Harika
 -- Create Date: 12/09/2025
--- Description: Checks row count reconciliation between source and staging tables.
+-- Description: Validates total row counts match between the latest source and target after CDC processing.
 
 -- Change History
 -- Version   Date         User                     Change

@@ -1,6 +1,6 @@
 -- Author: Harika
 -- Create Date: 12/09/2025
--- Description: Validates all active source records are loaded to staging model.
+-- Description: Validates that newly inserted records in the source are present in the target table.
 
 -- Change History
 -- Version   Date         User                     Change

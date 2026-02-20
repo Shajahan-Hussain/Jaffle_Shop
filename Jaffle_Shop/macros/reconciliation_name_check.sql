@@ -1,6 +1,6 @@
 -- Author: Harika
 -- Create Date: 07/10/2025
--- Description: Verifies column-level reconciliation between raw and staging
+-- Description: Validates that descriptive attribute values match between source and target layers.
 
 -- Change History
 -- Version   Date         User                     Change
